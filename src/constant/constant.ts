@@ -1,7 +1,9 @@
 
 export const COLORS = {
     primary:"#009B17",
-    white:"#ffffff"
+    white:"#ffffff",
+    black:"#343434",
+    borderColor:"#D9D9D9"
 }
 
 export const onboardingData = 
@@ -29,7 +31,10 @@ export const IMAGES = {
     one:require("../assets/images/one.png"),
     two:require("../assets/images/two.png"),
     three:require("../assets/images/three.png"),
+    logo:require("../assets/images/logo.png"),
     onboarding_background2:require("../assets/images/onboarding_background2.png"),
-    onboarding_background3:require("../assets/images/onboarding_background3.png")
+    onboarding_background3:require("../assets/images/onboarding_background3.png"),
+    laundry_service:require("../assets/images/Laundry_Service.png"),
+    back_icon:require("../assets/images/back_icon.png")
 }
 
