@@ -3,11 +3,14 @@ import React from 'react'
 import { COLORS } from '../../constant/constant'
 import BackButton from '../back_button/BackButton'
 
-const Header = () => {
+type Props = {
+  title:string
+}
+const Header = (props:Props) => {
   return (
     <View style={styles.container}>
         <BackButton />
-        <Text style={styles.headerTextStyle}>OTP</Text>
+        <Text style={styles.headerTextStyle}>{props.title}</Text>
     </View>
   )
 }

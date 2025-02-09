@@ -7,40 +7,31 @@ import React from 'react';
 import { COLORS, IMAGES } from '../../constant/constant';
 import Button from '../../component/button/Button';
 import Input from '../../component/input/Input';
+import Container from '../../component/view/Container';
 
 const RegisterPhoneScreen = () => {
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"} 
-      style={styles.container}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView 
-          contentContainerStyle={styles.scrollViewContent} 
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.inner}>
-            <View style={styles.topSection}>
-              <Image source={IMAGES.laundry_service} style={styles.laundryImage} />
-              <Image source={IMAGES.logo} style={styles.logo} />
-              <Text style={styles.title}>Let’s get started</Text>
-              <Text style={styles.subtitle}>Create an account to start ordering</Text>
-            </View>
+    <Container>
+      <View style={styles.inner}>
+        <View style={styles.topSection}>
+          <Image source={IMAGES.laundry_service} style={styles.laundryImage} />
+          <Image source={IMAGES.logo} style={styles.logo} />
+          <Text style={styles.title}>Let’s get started</Text>
+          <Text style={styles.subtitle}>Create an account to start ordering</Text>
+        </View>
 
-            <View style={styles.bottomSection}>
-              <Input keyboardType='phone-pad' />
+        <View style={styles.bottomSection}>
+          <Input keyboardType='phone-pad' />
 
-              <Text style={styles.termsText}>
-                By pressing “Continue”, you are agreeing to our {"\n"}
-                <Text style={styles.termsLink}>Terms and Conditions</Text>
-              </Text>
+          <Text style={styles.termsText}>
+            By pressing “Continue”, you are agreeing to our {"\n"}
+            <Text style={styles.termsLink}>Terms and Conditions</Text>
+          </Text>
 
-              <Button />
-            </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          <Button />
+        </View>
+      </View>
+    </Container>
   );
 };
 

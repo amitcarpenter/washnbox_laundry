@@ -6,22 +6,23 @@ type Props = {
     label?:string,
     labelStyle?:StyleProp<TextStyle>,
     inputStyle?:StyleProp<ViewStyle>,
-    keyboardType:"phone-pad" | "email-address"
+    keyboardType:"phone-pad" | "email-address",
+    placeholder?:string,
+    containerStyle?:StyleProp<ViewStyle>
 }
 const Input = (props:Props) => {
   return (
-    <View>
-
+    <View style={[props.containerStyle]}>
       <Text 
         style={[
             styles.labelStyle,
             props.labelStyle
         ]}>
-            Your Phone number
+          {props.label || "Enter label here"}
         </Text>
 
       <TextInput 
-        placeholder='+91' 
+        placeholder={props.placeholder || "+91"} 
         style={[
             styles.inputFieldStyle,
             props.inputStyle
@@ -33,21 +34,21 @@ const Input = (props:Props) => {
 }
 const styles = StyleSheet.create({
     inputFieldStyle:{
-        width:"100%",
-        height:55,
-        borderRadius:12,
-        borderWidth:1,
-        borderColor:COLORS.borderColor,
-        paddingHorizontal:16,
-        marginTop:10,
-        fontSize:16,
-        fontWeight:"700"
+      width:"100%",
+      height:55,
+      borderRadius:12,
+      borderWidth:1,
+      borderColor:COLORS.borderColor,
+      paddingHorizontal:16,
+      marginTop:10,
+      fontSize:16,
+      fontWeight:"500"
     },
     labelStyle:{
-        fontSize:14,
-        color:COLORS.black,
-        lineHeight:16,
-        fontWeight:"700"
+      fontSize:14,
+      color:COLORS.black,
+      lineHeight:16,
+      fontWeight:"600"
     }
 })
 
