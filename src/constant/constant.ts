@@ -35,6 +35,9 @@ export const IMAGES = {
     onboarding_background2:require("../assets/images/onboarding_background2.png"),
     onboarding_background3:require("../assets/images/onboarding_background3.png"),
     laundry_service:require("../assets/images/Laundry_Service.png"),
-    back_icon:require("../assets/images/back_icon.png")
+    back_icon:require("../assets/images/back_icon.png"),
+    profile:require("../assets/images/profile.png"),
+    camera:require("../assets/images/camera.png"),
+    map:require("../assets/images/map.png")
 }
 

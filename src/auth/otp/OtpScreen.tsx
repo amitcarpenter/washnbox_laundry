@@ -4,6 +4,7 @@ import { COLORS } from '../../constant/constant';
 import Header from '../../component/header/Header';
 import { OtpInput } from "react-native-otp-entry";
 import Button from '../../component/button/Button';
+import Container from '../../component/view/Container';
 // import styles from './styles'; // Import the styles from a separate file
 
 const OtpScreen = () => {
@@ -37,10 +38,8 @@ const OtpScreen = () => {
     )
   }
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-          <Header />
+        <Container>
+          <Header title='OTP' />
           <View style={styles.content}>
             <Text style={styles.timerText}>00:42</Text>
             <Text style={styles.verificationText}>Type the verification code {"\n"} we’ve sent you</Text>
@@ -51,9 +50,7 @@ const OtpScreen = () => {
 
             <Button />
           </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </Container>
   );
 };
 
