@@ -3,7 +3,8 @@ export const COLORS = {
     primary:"#009B17",
     white:"#ffffff",
     black:"#343434",
-    borderColor:"#D9D9D9"
+    borderColor:"#D9D9D9",
+    search_field_color:"#F3FAFF"
 }
 
 export const onboardingData = 
@@ -38,6 +39,89 @@ export const IMAGES = {
     back_icon:require("../assets/images/back_icon.png"),
     profile:require("../assets/images/profile.png"),
     camera:require("../assets/images/camera.png"),
-    map:require("../assets/images/map.png")
+    map:require("../assets/images/map.png"),
+    my_laundry:require("../assets/images/My_Laundry.png")
 }
+
+export const ICONS = {
+    home:require("../assets/icons/home.png"),
+    home_w:require("../assets/icons/home_w.png"),
+    chat:require("../assets/icons/chat.png"),
+    chat_w:require("../assets/icons/chat_w.png"),
+    order:require("../assets/icons/order.png"),
+    order_w:require("../assets/icons/order_w.png"),
+    profile:require("../assets/images/profile.png"),
+    notification_bell:require("../assets/icons/notification_bell.png"),
+    filter:require("../assets/icons/filter.png"),
+    search:require("../assets/icons/search.png"),
+    rupees:require("../assets/icons/rupees.png")
+}
+
+const USERS = {
+    user1:require("../assets/images/user1.png"),
+    user2:require("../assets/images/user2.png"),
+    user3:require("../assets/images/user3.png"),
+    user4:require("../assets/images/user4.png"),
+    user5:require("../assets/images/user5.png")
+}
+
+
+export const HomeScreenData = [
+    {
+        image:USERS.user1,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Iron","Dry Clean","Washing"]
+    },
+    {
+        image:USERS.user2,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Dry Clean","Washing"]
+    },
+    {
+        image:USERS.user3,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Iron","Washing"]
+    },
+    {
+        image:USERS.user4,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Iron"]
+    },
+    {
+        image:USERS.user5,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Dry Clean"]
+    },
+    {
+        image:USERS.user1,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Iron","Dry Clean","Washing"]
+    },
+    {
+        image:USERS.user2,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Dry Clean","Washing"]
+    },
+    {
+        image:USERS.user3,
+        name:"Roxanne Jaskolski",
+        date_time:"13-05-2025 07:30 PM",
+        price:"130",
+        services:["Iron","Washing"]
+    }
+]
 
