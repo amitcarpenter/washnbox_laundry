@@ -1,18 +1,20 @@
-import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, ScrollView, StyleSheet, StyleProp } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, ScrollView, StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import React, { ReactNode } from 'react'
 import { COLORS } from '../../constant/constant'
 
 type Props = {
-    children:ReactNode
+    children:ReactNode,
+    containerStyle?:StyleProp<ViewStyle>
 }
 const Container = (props:Props) => {
   return (
     <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
-        style={styles.container}
+        style={[styles.container,props.containerStyle]}
     >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollViewContent} 
                 keyboardShouldPersistTaps="handled"
             >

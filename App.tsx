@@ -7,10 +7,11 @@ import { onboardingData } from './src/constant/constant'
 import RegisterPhoneScreen from './src/auth/phone/RegisterPhoneScreen'
 import OtpScreen from './src/auth/otp/OtpScreen'
 import EditScreen from './src/screens/edit/EditScreen'
+import RootStackNavigation from './src/navigation/stack/RootStackNavigation'
 
 const App = () => {
   return (
-    <EditScreen />
+    <RootStackNavigation/>
   )
 }
 
