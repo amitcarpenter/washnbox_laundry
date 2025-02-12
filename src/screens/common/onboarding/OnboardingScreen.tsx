@@ -22,7 +22,7 @@ const OnboardingScreen = () => {
   const goNext = () => {
     if (carouselRef.current && activeIndex < onboardingData.length - 1) {
       carouselRef?.current?.snapToNext();
-    }else{
+    }else if (activeIndex=== onboardingData.length-1) {
       navigation.navigate("ProfileScreen")
     }
   };

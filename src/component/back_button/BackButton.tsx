@@ -1,14 +1,22 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import React from 'react';
 import { COLORS, ICONS, IMAGES } from '../../constant/constant';
+import { useNavigation } from '@react-navigation/native';
 
 
 type Props = {
-  isFilter?:boolean
+  isFilter?:boolean,
+  onPress?:()=>void
 }
 const BackButton = (props:Props) => {
+
+  const navigation = useNavigation()
+
+  const onBackPress = () =>{
+    navigation.goBack()
+  }
   return (
-    <TouchableOpacity style={props.isFilter?styles.filterButton:styles.button}>
+    <TouchableOpacity onPress={onBackPress} style={props.isFilter?styles.filterButton:styles.button}>
       {
         props.isFilter ?
         <Image source={ICONS.filter} style={styles.filterImageStyle} />

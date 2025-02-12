@@ -116,7 +116,8 @@ export const IMAGES = {
     profile:require("../assets/images/profile.png"),
     camera:require("../assets/images/camera.png"),
     map:require("../assets/images/map.png"),
-    my_laundry:require("../assets/images/My_Laundry.png")
+    my_laundry:require("../assets/images/My_Laundry.png"),
+    success:require("../assets/images/success.png")
 }
 
 export const ICONS = {
@@ -132,7 +133,8 @@ export const ICONS = {
     search:require("../assets/icons/search.png"),
     rupees:require("../assets/icons/rupees.png"),
     picking_box:require("../assets/icons/picking_box.png"),
-    phone:require("../assets/icons/phone.png")
+    phone:require("../assets/icons/phone.png"),
+    cancel:require("../assets/icons/cancel.png")
 }
 
 export const USERS = {

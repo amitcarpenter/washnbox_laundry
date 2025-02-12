@@ -5,13 +5,15 @@ import { createStackNavigator } from '@react-navigation/stack'
 import TabNavigation from '../tab/TabNavigation'
 import NotificationScreen from '../../screens/notification/NotificationScreen'
 import OnboardingScreen from '../../screens/common/onboarding/OnboardingScreen'
+import EditScreen from '../../screens/edit/EditScreen'
+import OrderDetails from '../../screens/orders/OrderDetails'
 
 const Stack = createStackNavigator()
 
 const RootStackNavigation = () => {
   return (
    <NavigationContainer>
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='OnbordingScreen' >
 
       <Stack.Screen 
         name='OnbordingScreen'
@@ -21,7 +23,7 @@ const RootStackNavigation = () => {
 
       <Stack.Screen 
         name='ProfileScreen'
-        component={OnboardingScreen}
+        component={EditScreen}
         options={{headerShown:false}}
       />
 
@@ -34,6 +36,12 @@ const RootStackNavigation = () => {
       <Stack.Screen 
         name='NotificationScreen' 
         component={NotificationScreen} 
+        options={{headerShown:false}}
+      />
+
+      <Stack.Screen 
+        name='OrderDetailScreen'
+        component={OrderDetails} 
         options={{headerShown:false}}
       />
     </Stack.Navigator>

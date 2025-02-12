@@ -3,9 +3,14 @@ import React from 'react'
 import Container from '../../component/view/Container'
 import Header from '../../component/header/Header'
 import { COLORS, ICONS, IMAGES, NotificationData, USERS } from '../../constant/constant'
+import { useNavigation } from '@react-navigation/native'
 
 const NotificationScreen = () => {
 
+    const navigation = useNavigation()
+    const navigateToOrderDetails = () =>{
+        navigation.navigate("OrderDetailScreen")
+    }
 
   const renderNotificationsItem = (item:any) =>{
     return(
@@ -33,7 +38,7 @@ const NotificationScreen = () => {
 
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.detailsButton}>
+                <TouchableOpacity onPress={navigateToOrderDetails} style={styles.detailsButton}>
                     <Text style={styles.detailsButtonText}>See Details</Text>
                 </TouchableOpacity>
             </View>
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     },
     detailsButton: {
         width: "90%",
-        height: 35,
+        height: 40,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: COLORS.primary,

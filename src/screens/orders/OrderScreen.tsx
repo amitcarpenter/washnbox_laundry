@@ -1,13 +1,18 @@
-import { View, Text, StyleSheet, FlatList, Image } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import Container from '../../component/view/Container'
 import Header from '../../component/header/Header'
 import { COLORS, ICONS, OrderItems } from '../../constant/constant'
+import { useNavigation } from '@react-navigation/native'
+import Modal from "react-native-modal"
 
 const OrderScreen = () => {
 
+  const navigation  = useNavigation()
 
-
+  const navigateToOrderDetails = () =>{
+    navigation.navigate("OrderDetailScreen")
+  }
 
   const renderOrderStatusBasedOnCode = (code:number,item:any) =>{
     switch (code) {
@@ -30,7 +35,7 @@ const OrderScreen = () => {
 
   const renderOrderItem = ({item}) =>{
     return(
-      <View style={styles.orderItemContainer}>
+      <TouchableOpacity onPress={navigateToOrderDetails} style={styles.orderItemContainer}>
         <View style={styles.orderItemHeader}>
           <Text style={styles.orderDateText}>{item?.date_time}</Text>
           {renderOrderStatusBasedOnCode(item?.order_status_code,item)}
@@ -48,7 +53,7 @@ const OrderScreen = () => {
             </View>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 
