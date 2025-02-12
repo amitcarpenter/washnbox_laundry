@@ -6,6 +6,7 @@ import OrderScreen from '../../screens/orders/OrderScreen';
 import ChatScreen from '../../screens/chat/ChatScreen';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
 import { COLORS, ICONS } from '../../constant/constant';
+import OrderDetails from '../../screens/orders/OrderDetails';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +34,7 @@ const getTabIcon = (focused, activeIcon, inactiveIcon) => {
 };
 
 const TabNavigation = () => {
+  
   const tabsConfig = {
     tabBarStyle: {
       height: 80,
@@ -105,7 +107,7 @@ const TabNavigation = () => {
 
       <Tab.Screen
         name="ProfileScreen"
-        component={ProfileScreen}
+        component={OrderDetails}
         options={{
           title: 'Profile',
           headerShown: false,
