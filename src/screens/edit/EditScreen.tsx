@@ -7,8 +7,12 @@ import Input from '../../component/input/Input';
 import Button from '../../component/button/Button';
 // import Geolocation from 'react-native-geolocation-service';
 import Geolocation from '@react-native-community/geolocation';
+import { useNavigation } from '@react-navigation/native';
 
 const EditScreen = () => {
+
+  const navigation = useNavigation()
+  
 
   const renderProfileImage = () => {
     return (
@@ -81,7 +85,7 @@ const EditScreen = () => {
   },[])
 
   const getLocation = () =>{
-    Geolocation.getCurrentPosition(info => console.log(info));
+    navigation.navigate("TabNavigation")
   }
 
   return (

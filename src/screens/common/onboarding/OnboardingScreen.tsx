@@ -3,6 +3,7 @@ import { View, Image, Dimensions, StyleSheet, Text, TouchableOpacity } from "rea
 import Carousel from "react-native-snap-carousel";
 import { COLORS, IMAGES, onboardingData, ProjectImage } from "../../../constant/constant";
 import { Pagination } from "react-native-snap-carousel";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -16,10 +17,13 @@ const images = [
 const OnboardingScreen = () => {
   const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigation = useNavigation()
 
   const goNext = () => {
     if (carouselRef.current && activeIndex < onboardingData.length - 1) {
       carouselRef?.current?.snapToNext();
+    }else if (activeIndex=== onboardingData.length-1) {
+      navigation.navigate("ProfileScreen")
     }
   };
 

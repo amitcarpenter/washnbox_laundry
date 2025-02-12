@@ -2,8 +2,11 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList } 
 import React from 'react';
 import Container from '../../component/view/Container';
 import { COLORS, HomeScreenData, ICONS, IMAGES } from '../../constant/constant';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
+
+  const navigation = useNavigation()
 
   const renderSearchField = () => (
     <View style={styles.searchContainer}>
@@ -18,7 +21,7 @@ const HomeScreen = () => {
     <View style={styles.headerContainer}>
       <Image source={IMAGES.logo} style={styles.logo} />
       <Image source={IMAGES.my_laundry} style={styles.laundryLogo} resizeMode='contain' />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>navigation.navigate("NotificationScreen")}>
         <Image source={ICONS.notification_bell} style={styles.notificationIcon} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.filterButton}>
@@ -67,8 +70,11 @@ const HomeScreen = () => {
   return (
     <Container containerStyle={styles.containerStyle}>
       <View style={styles.topSection}>
+
         {renderHeader()}
+
         {renderSearchField()}
+
       </View>
       <View style={styles.bottomSection}>
         <Text style={styles.pendingOrdersText}>New Pending Orders</Text>

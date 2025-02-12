@@ -4,7 +4,8 @@ export const COLORS = {
     white:"#ffffff",
     black:"#343434",
     borderColor:"#D9D9D9",
-    search_field_color:"#F3FAFF"
+    search_field_color:"#F3FAFF",
+    orderItemBackgroundColor:"#EEF3E5"
 }
 
 export const onboardingData = 
@@ -26,6 +27,81 @@ export const onboardingData =
         }
 ]
 
+export const OrderItems = [
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Paid",
+        price:"130",
+        order_status:"Ready For Pickup",
+        order_status_code:0,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Cash on Delivery",
+        price:"130",
+        order_status:"In Progress",
+        order_status_code:1,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Paid",
+        price:"130",
+        order_status:"Recived",
+        order_status_code:2,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Cash on Delivery",
+        price:"130",
+        order_status:"Ready For Pickup",
+        order_status_code:0,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Paid",
+        price:"130",
+        order_status:"In Progress",
+        order_status_code:1,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Paid",
+        price:"130",
+        order_status:"Ready For Pickup",
+        order_status_code:0,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Cash on Delivery",
+        price:"130",
+        order_status:"In Progress",
+        order_status_code:1,
+        lock_code:"3265"
+    },
+    {
+        date_time:"13-05-2025 07:30 PM",
+        order_id:"5698745",
+        payment_status:"Paid",
+        price:"130",
+        order_status:"Recived",
+        order_status_code:2,
+        lock_code:"3265"
+    },
+]
+
 export const IMAGES = {
     right_arrow:require("../assets/images/right_arrow.png"),
     onboarding_background:require("../assets/images/onboarding_background.png"),
@@ -40,7 +116,8 @@ export const IMAGES = {
     profile:require("../assets/images/profile.png"),
     camera:require("../assets/images/camera.png"),
     map:require("../assets/images/map.png"),
-    my_laundry:require("../assets/images/My_Laundry.png")
+    my_laundry:require("../assets/images/My_Laundry.png"),
+    success:require("../assets/images/success.png")
 }
 
 export const ICONS = {
@@ -54,10 +131,13 @@ export const ICONS = {
     notification_bell:require("../assets/icons/notification_bell.png"),
     filter:require("../assets/icons/filter.png"),
     search:require("../assets/icons/search.png"),
-    rupees:require("../assets/icons/rupees.png")
+    rupees:require("../assets/icons/rupees.png"),
+    picking_box:require("../assets/icons/picking_box.png"),
+    phone:require("../assets/icons/phone.png"),
+    cancel:require("../assets/icons/cancel.png")
 }
 
-const USERS = {
+export const USERS = {
     user1:require("../assets/images/user1.png"),
     user2:require("../assets/images/user2.png"),
     user3:require("../assets/images/user3.png"),
@@ -65,6 +145,50 @@ const USERS = {
     user5:require("../assets/images/user5.png")
 }
 
+export const NotificationData = [
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+    {
+        image:"",
+         time:"07:30 AM",
+        date:"Today",
+        name:''
+    },
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+    {
+        image:"",
+        time:"07:30 AM",
+        date:"Today",
+        name:""
+    },
+]
 
 export const HomeScreenData = [
     {

@@ -5,12 +5,18 @@ import BackButton from '../back_button/BackButton'
 
 type Props = {
   title:string
+  isFilter?:boolean,
+  onBackPress?:()=>void
 }
 const Header = (props:Props) => {
   return (
     <View style={styles.container}>
-        <BackButton />
-        <Text style={styles.headerTextStyle}>{props.title}</Text>
+
+      {props.isFilter!==true && <BackButton />}
+
+      <Text style={styles.headerTextStyle}>{props.title}</Text>
+      
+      <BackButton isFilter={props.isFilter} />
     </View>
   )
 }
