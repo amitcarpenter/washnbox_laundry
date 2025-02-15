@@ -1,12 +1,38 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList } from 'react-native';
-import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform } from 'react-native';
+import React, { useState } from 'react';
 import Container from '../../component/view/Container';
 import { COLORS, HomeScreenData, ICONS, IMAGES } from '../../constant/constant';
 import { useNavigation } from '@react-navigation/native';
+import Modal from "react-native-modal"
+import Header from '../../component/header/Header';
+import CheckBox from 'react-native-check-box';
+import Dropdown from "react-native-dropdown-picker"
+
+
+const deviceWidth = Dimensions.get("window").width;
+const deviceHeight = Dimensions.get("window").height
+
 
 const HomeScreen = () => {
-
+  
   const navigation = useNavigation()
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([
+    { label: 'Ready for Pick', value: 'Ready for Pick' },
+    { label: 'In Progress', value: 'In Progress' },
+    { label: 'Received', value: 'Received' }
+  ]);
+
+  const [openPayStatus, setOpenPayStatus] = useState(false)
+  const [payStatusValue, setPayStatusValue] = useState(null)
+  const [payStatusItems, setPayStatusItems] = useState([
+    { label: 'Cash on Delivery', value: 'Cash on Delivery' },
+    { label: 'Paid', value: 'Paid' },
+    // { label: 'Ready for Pick', value: 'Ready for Pick' }
+  ]);
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
 
   const renderSearchField = () => (
     <View style={styles.searchContainer}>
@@ -24,7 +50,7 @@ const HomeScreen = () => {
       <TouchableOpacity onPress={()=>navigation.navigate("NotificationScreen")}>
         <Image source={ICONS.notification_bell} style={styles.notificationIcon} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.filterButton}>
+      <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
         <Image source={ICONS.filter} style={styles.filterIcon} />
       </TouchableOpacity>
     </View>
@@ -67,19 +93,149 @@ const HomeScreen = () => {
     )
   }
 
+  const closeFilterModal = () =>{
+    setIsFilterModalOpen(false)
+  }
+
+  const openFilterModal = () =>{
+    setIsFilterModalOpen(true)
+  }
+
+  const renderFilterModal = () => {
+    return(
+      <View style={{flex:1}}>
+        <Modal 
+          style={{margin:0}} 
+          animationIn="slideInRight" 
+          isVisible={isFilterModalOpen} 
+          onBackdropPress={closeFilterModal}
+          animationOut={"slideOutRight"}
+          backdropOpacity={0.2}
+        >
+        <View style={{
+          width:"70%",
+          height:"100%",
+          borderTopLeftRadius:50,
+          borderBottomLeftRadius:20,
+          backgroundColor:"white",
+          alignSelf:"flex-end",
+          padding:16
+        }}>
+          <View style={{flex:0.15,justifyContent:"center"}}>
+            <Header 
+              onFilterPress={closeFilterModal} 
+              title='Filters'
+              isFilter={false}
+            />
+          </View>
+          <View style={{flex:0.85,paddingVertical:10}}>
+            <View>
+              <Text style={{
+                fontSize:16,
+                fontWeight:"600",
+                color:COLORS.primary,
+                marginBottom:15
+              }}>Order Status</Text>
+
+              <View style={{flexDirection:"row",alignItems:"center"}}>
+                <CheckBox
+                  onClick={()=>{}}
+                  isChecked={true}
+                  rightText=' '
+                  checkBoxColor={COLORS.primary}
+                />
+                <Dropdown 
+                  open={open}
+                    value={value}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={setValue}
+                    setItems={setItems}
+                    dropDownContainerStyle={{
+                      borderColor:COLORS.borderColor,
+                      width:"85%",
+                      marginHorizontal:10,
+                      marginRight:-20,
+                    }}
+                    style={{
+                      marginHorizontal:10,
+                      width:"85%",
+                      borderColor:COLORS.borderColor
+                    }}
+                    textStyle={{
+                      fontSize:14,
+                      fontWeight:"600",
+                      color:"black",
+                    }}
+                    placeholder="Ready for Pick"
+                />
+              </View>
+              
+            </View>
+            <View style={{paddingTop:20}}>
+              <Text style={{
+                fontSize:16,
+                fontWeight:"600",
+                color:COLORS.primary,
+                marginBottom:15
+              }}>Pay Status</Text>
+              
+              <View style={{flexDirection:"row",alignItems:"center"}}>
+                  <CheckBox
+                    onClick={()=>{}}
+                    isChecked={true}
+                    rightText=' '
+                    checkBoxColor={COLORS.primary}
+                  />
+                <Dropdown 
+                  open={openPayStatus}
+                  value={payStatusValue}
+                  items={payStatusItems}
+                  setOpen={setOpenPayStatus}
+                  setValue={setPayStatusValue}
+                  setItems={setPayStatusItems}
+                  dropDownContainerStyle={{
+                    borderColor:COLORS.borderColor,
+                    width:"85%",
+                    marginHorizontal:10,
+                    marginRight:-20,
+                  }}
+                  style={{
+                    marginHorizontal:10,
+                    width:"85%",
+                    borderColor:COLORS.borderColor
+                  }}
+                  textStyle={{
+                    fontSize:14,
+                    fontWeight:"600",
+                    color:"black",
+                  }}
+                  placeholder="Cash on Delivery"
+                />
+              </View>
+              
+            </View>
+          </View>
+        </View>
+      </Modal>
+      </View>
+    )
+  }
+
   return (
     <Container containerStyle={styles.containerStyle}>
       <View style={styles.topSection}>
-
         {renderHeader()}
 
         {renderSearchField()}
-
       </View>
+
       <View style={styles.bottomSection}>
         <Text style={styles.pendingOrdersText}>New Pending Orders</Text>
         {renderOrdersList()}
       </View>
+
+      {renderFilterModal()}
     </Container>
   );
 };

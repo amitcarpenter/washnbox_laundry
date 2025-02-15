@@ -7,6 +7,8 @@ import NotificationScreen from '../../screens/notification/NotificationScreen'
 import OnboardingScreen from '../../screens/common/onboarding/OnboardingScreen'
 import EditScreen from '../../screens/edit/EditScreen'
 import OrderDetails from '../../screens/orders/OrderDetails'
+import RegisterPhoneScreen from '../../auth/phone/RegisterPhoneScreen'
+import OtpScreen from '../../auth/otp/OtpScreen'
 
 const Stack = createStackNavigator()
 
@@ -18,6 +20,18 @@ const RootStackNavigation = () => {
       <Stack.Screen 
         name='OnbordingScreen'
         component={OnboardingScreen}
+        options={{headerShown:false}}
+      />
+
+      <Stack.Screen 
+        name='RegisterPhoneScreen'
+        component={RegisterPhoneScreen}
+        options={{headerShown:false}}
+      />
+
+      <Stack.Screen 
+        name='OtpScreen'
+        component={OtpScreen}
         options={{headerShown:false}}
       />
 

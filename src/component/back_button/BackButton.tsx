@@ -16,7 +16,7 @@ const BackButton = (props:Props) => {
     navigation.goBack()
   }
   return (
-    <TouchableOpacity onPress={onBackPress} style={props.isFilter?styles.filterButton:styles.button}>
+    <TouchableOpacity onPress={props.onPress} style={props.isFilter?styles.filterButton:styles.button}>
       {
         props.isFilter ?
         <Image source={ICONS.filter} style={styles.filterImageStyle} />

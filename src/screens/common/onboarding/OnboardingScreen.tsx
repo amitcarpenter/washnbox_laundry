@@ -23,7 +23,7 @@ const OnboardingScreen = () => {
     if (carouselRef.current && activeIndex < onboardingData.length - 1) {
       carouselRef?.current?.snapToNext();
     }else if (activeIndex=== onboardingData.length-1) {
-      navigation.navigate("ProfileScreen")
+      navigation.navigate("RegisterPhoneScreen")
     }
   };
 
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   },
   titleStyle:{
     fontSize:24,
+    textAlign:"center",
     fontWeight:"700",
     color:COLORS.primary
   },

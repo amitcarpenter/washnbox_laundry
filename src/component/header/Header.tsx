@@ -7,26 +7,27 @@ type Props = {
   title:string
   isFilter?:boolean,
   onBackPress?:()=>void
+  onFilterPress?:()=>void
 }
 const Header = (props:Props) => {
   return (
     <View style={styles.container}>
 
-      {props.isFilter!==true && <BackButton />}
+      {props.isFilter!==true && <BackButton onPress={props.onBackPress} />}
 
       <Text style={styles.headerTextStyle}>{props.title}</Text>
       
-      <BackButton isFilter={props.isFilter} />
+      <BackButton onPress={props.onFilterPress}  isFilter={props.isFilter} />
     </View>
   )
 }
 const styles = StyleSheet.create({
     container:{
-        width:"100%",
-        height:52,
-        justifyContent:"center",
-        alignItems:"center",
-        marginTop:20
+      width:"100%",
+      height:52,
+      justifyContent:"center",
+      alignItems:"center",
+      marginTop:20
     },
     headerTextStyle:{
         fontSize:24,

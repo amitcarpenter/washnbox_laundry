@@ -1,17 +1,52 @@
 import { 
   View, Text, StyleSheet, Image, 
   KeyboardAvoidingView, Platform, 
-  TouchableWithoutFeedback, Keyboard, ScrollView 
+  TouchableWithoutFeedback, Keyboard, ScrollView, 
+  Alert
 } from 'react-native';
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { COLORS, IMAGES } from '../../constant/constant';
 import Button from '../../component/button/Button';
 import Input from '../../component/input/Input';
 import Container from '../../component/view/Container';
+import { useNavigation } from '@react-navigation/native';
+import PhoneInput from 'react-native-phone-number-input';
+import { makePostApiCall } from '../../utils/helper';
+import { PROVIDER_URLS } from '../../utils/config';
 
 const RegisterPhoneScreen = () => {
+
+  const navigation = useNavigation()
+  const phoneInput = useRef<PhoneInput>(null);
+  const [value, setValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
+
+  const memoizedRegisterNumberPress = useCallback(()=>{
+    onRegisterNumberPress()
+  },[])
+
+  const onRegisterNumberPress = async () =>{
+    let data = { "mobile_number" : formattedValue}
+    let url = PROVIDER_URLS.LOGIN_WITH_NUMBER
+    let response = await makePostApiCall(url,data)
+    await checkResponse(response)
+  }
+
+  const checkResponse = async (response:any) =>{
+    if(response?.success){
+      navigation.navigate("OtpScreen")
+    }else{
+      Alert.alert("Failed","Something went wrong",[
+        {
+          text:"OK",
+          onPress:()=>{}
+        }
+      ])
+    }
+  }
+
   return (
-    <Container>
+    <Container containerStyle={{flex:1}}>
       <View style={styles.inner}>
         <View style={styles.topSection}>
           <Image source={IMAGES.laundry_service} style={styles.laundryImage} />
@@ -21,14 +56,41 @@ const RegisterPhoneScreen = () => {
         </View>
 
         <View style={styles.bottomSection}>
-          <Input keyboardType='phone-pad' />
+          <Text style={styles.labelStyle}>Your Phone number</Text>
+          <PhoneInput
+            ref={phoneInput}
+            defaultValue={value}
+            defaultCode="IN"
+            layout="second"
+            containerStyle={styles.phoneInputStyle}
+            onChangeText={(text) => { setValue(text)}}
+            onChangeFormattedText={(text) => { setFormattedValue(text) }}
+            textInputStyle={{
+              padding:0,
+              margin:0,
+              marginTop:0,
+              fontSize:16,
+              fontWeight:"500",
+            }}
+            codeTextStyle={{
+              padding:0,
+              margin:0
+            }}
+            textContainerStyle={{
+              backgroundColor:"white",
+              flex:1
+            }}
+          />
 
           <Text style={styles.termsText}>
             By pressing “Continue”, you are agreeing to our {"\n"}
             <Text style={styles.termsLink}>Terms and Conditions</Text>
           </Text>
 
-          <Button />
+          <Button 
+            title='Continue' 
+            onPress={memoizedRegisterNumberPress} 
+          />
         </View>
       </View>
     </Container>
@@ -36,23 +98,31 @@ const RegisterPhoneScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: COLORS.white,
-    padding:16
+  labelStyle: {
+    color: 'black',
+    fontSize: 16,
+    marginBottom: 8,
+    fontWeight:"600"
+  },
+  phoneInputStyle:{
+    width:"100%",
+    height:55,
+    borderRadius:12,
+    borderWidth:1,
+    borderColor:COLORS.borderColor,
+    paddingRight:8,
+    fontSize:16,
+    fontWeight:"500",
+    marginTop:8
   },
   scrollViewContent: {
     minHeight: "100%",
   },
   inner: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-between",
+    minHeight: "100%",
   },
   topSection: {
-    width: "100%",
-    height: "50%",
+    minHeight: "50%",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -81,8 +151,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   bottomSection: {
-    width: "100%",
-    height: "50%",  // ✅ Fixed height for input & button area
+    minHeight:"50%",
     justifyContent: "flex-start",
     paddingTop: 20,
   },

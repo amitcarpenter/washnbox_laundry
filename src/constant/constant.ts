@@ -134,7 +134,8 @@ export const ICONS = {
     rupees:require("../assets/icons/rupees.png"),
     picking_box:require("../assets/icons/picking_box.png"),
     phone:require("../assets/icons/phone.png"),
-    cancel:require("../assets/icons/cancel.png")
+    cancel:require("../assets/icons/cancel.png"),
+    delete:require("../assets/icons/delete.png")
 }
 
 export const USERS = {
@@ -246,6 +247,25 @@ export const HomeScreenData = [
         date_time:"13-05-2025 07:30 PM",
         price:"130",
         services:["Iron","Washing"]
+    }
+]
+
+export const ClothsTypes = [
+    {
+        id:0,
+        type:"Shirt"
+    },
+    {
+        id:1,
+        type:"T-Shirt"
+    },
+    {
+        id:2,
+        type:"Jeans"
+    },
+    {
+        id:3,
+        type:"Lower"
     }
 ]
 
