@@ -5,10 +5,12 @@ import Header from '../../component/header/Header';
 import { OtpInput } from "react-native-otp-entry";
 import Button from '../../component/button/Button';
 import Container from '../../component/view/Container';
+import { useNavigation } from '@react-navigation/native';
 // import styles from './styles'; // Import the styles from a separate file
 
 const OtpScreen = () => {
 
+  const navigation = useNavigation()
 
   const renderOtpInput = () =>{
     return(
@@ -48,7 +50,10 @@ const OtpScreen = () => {
             <Text style={styles.phoneNumber}>+1 897-897-8970 <Text style={styles.editText}>Edit</Text></Text>
             <Text style={styles.resendText}>Send again</Text>
 
-            <Button />
+            <Button 
+              title='Continue' 
+              onPress={()=>navigation.navigate("ProfileScreen")} 
+            />
           </View>
         </Container>
   );
