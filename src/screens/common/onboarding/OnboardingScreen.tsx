@@ -4,6 +4,7 @@ import Carousel from "react-native-snap-carousel";
 import { COLORS, IMAGES, onboardingData, ProjectImage } from "../../../constant/constant";
 import { Pagination } from "react-native-snap-carousel";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -23,6 +24,7 @@ const OnboardingScreen = () => {
     if (carouselRef.current && activeIndex < onboardingData.length - 1) {
       carouselRef?.current?.snapToNext();
     }else if (activeIndex=== onboardingData.length-1) {
+      AsyncStorage.setItem("isBordingScreenVisited","1")
       navigation.navigate("RegisterPhoneScreen")
     }
   };

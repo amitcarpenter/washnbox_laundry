@@ -9,6 +9,7 @@ type Props = {
     keyboardType:"phone-pad" | "email-address",
     placeholder?:string,
     containerStyle?:StyleProp<ViewStyle>
+    onChangeText?:(value:string)=>void
 }
 const Input = (props:Props) => {
   return (
@@ -27,11 +28,13 @@ const Input = (props:Props) => {
             styles.inputFieldStyle,
             props.inputStyle
         ]}
+        onChangeText={props.onChangeText}
         keyboardType={props.keyboardType}
       />
     </View>
   )
 }
+
 const styles = StyleSheet.create({
     inputFieldStyle:{
       width:"100%",

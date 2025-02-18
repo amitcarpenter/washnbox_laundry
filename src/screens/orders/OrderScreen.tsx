@@ -59,14 +59,13 @@ const OrderScreen = () => {
 
   return (
     <Container>
-      
       <Header title='Orders' isFilter={true} />
       
       <View>
         <Text style={styles.activeOrdersText}>6 Active Orders</Text>
       </View>
 
-      <FlatList data={OrderItems} renderItem={(item)=>renderOrderItem(item)} />
+      <FlatList data={OrderItems} scrollEnabled={true} renderItem={(item)=>renderOrderItem(item)} />
 
     </Container>
   )

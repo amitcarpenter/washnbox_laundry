@@ -253,19 +253,75 @@ export const HomeScreenData = [
 export const ClothsTypes = [
     {
         id:0,
-        type:"Shirt"
+        type:"Shirt",
+        services:[
+            {
+                name:"Wash",
+                price:0
+            },
+            {
+                name:"Dry Wash",
+                price:0
+            },
+            {
+                name:"Iron",
+                price:0
+            },
+        ]  
     },
     {
         id:1,
-        type:"T-Shirt"
+        type:"T-Shirt",
+        services:[
+            {
+                name:"Wash",
+                price:0
+            },
+            {
+                name:"Dry Wash",
+                price:0
+            },
+            {
+                name:"Iron",
+                price:0
+            },
+        ]  
     },
     {
         id:2,
-        type:"Jeans"
+        type:"Jeans",
+        services:[
+            {
+                name:"Wash",
+                price:0
+            },
+            {
+                name:"Dry Wash",
+                price:0
+            },
+            {
+                name:"Iron",
+                price:0
+            },
+        ]  
     },
     {
         id:3,
-        type:"Lower"
+        type:"Lower",
+        services:[
+            {
+                name:"Wash",
+                price:0
+            },
+            {
+                name:"Dry Wash",
+                price:0
+            },
+            {
+                name:"Iron",
+                price:0
+            },
+        ]  
     }
 ]
 

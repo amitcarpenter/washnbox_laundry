@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import PhoneInput from 'react-native-phone-number-input';
 import { makePostApiCall } from '../../utils/helper';
 import { PROVIDER_URLS } from '../../utils/config';
+import { useDispatch, UseDispatch } from 'react-redux';
+import { addLoginData } from '../../redux/dataSlice';
 
 const RegisterPhoneScreen = () => {
 
@@ -20,20 +22,32 @@ const RegisterPhoneScreen = () => {
   const phoneInput = useRef<PhoneInput>(null);
   const [value, setValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
+  const dispatch = useDispatch()
 
   const memoizedRegisterNumberPress = useCallback(()=>{
     onRegisterNumberPress()
-  },[])
+  },[formattedValue])
 
   const onRegisterNumberPress = async () =>{
-    let data = { "mobile_number" : formattedValue}
-    let url = PROVIDER_URLS.LOGIN_WITH_NUMBER
-    let response = await makePostApiCall(url,data)
-    await checkResponse(response)
+    let formattedNum = formattedValue;
+    if (!formattedNum) {
+      Alert.alert("Error", "Please enter a valid phone number.");
+      return;
+    }
+
+    let data = { "mobile_number": formattedNum };
+    let url = PROVIDER_URLS.LOGIN_WITH_NUMBER;
+    let response = await makePostApiCall(url, data);
+    await checkResponse(response);
   }
 
   const checkResponse = async (response:any) =>{
     if(response?.success){
+      dispatch(addLoginData({
+        number:value,
+        formattedValue:formattedValue,
+        ...response
+      }))
       navigation.navigate("OtpScreen")
     }else{
       Alert.alert("Failed","Something went wrong",[
@@ -64,7 +78,10 @@ const RegisterPhoneScreen = () => {
             layout="second"
             containerStyle={styles.phoneInputStyle}
             onChangeText={(text) => { setValue(text)}}
-            onChangeFormattedText={(text) => { setFormattedValue(text) }}
+            onChangeFormattedText={(text)=> { 
+              console.log("Formatted Number:", text); 
+              setFormattedValue(text); 
+            }}
             textInputStyle={{
               padding:0,
               margin:0,

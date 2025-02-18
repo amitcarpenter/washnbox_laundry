@@ -1,12 +1,15 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform, Alert, BackHandler } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Container from '../../component/view/Container';
 import { COLORS, HomeScreenData, ICONS, IMAGES } from '../../constant/constant';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Modal from "react-native-modal"
 import Header from '../../component/header/Header';
 import CheckBox from 'react-native-check-box';
 import Dropdown from "react-native-dropdown-picker"
+import { PROVIDER_URLS } from '../../utils/config';
+import { getUserToken, makeGetApiCall } from '../../utils/helper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const deviceWidth = Dimensions.get("window").width;
@@ -31,8 +34,50 @@ const HomeScreen = () => {
     { label: 'Paid', value: 'Paid' },
     // { label: 'Ready for Pick', value: 'Ready for Pick' }
   ]);
+  const [token, setToken] = useState("")
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          "Exit App",
+          "Are you sure you want to exit?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Yes", onPress: () => BackHandler.exitApp() },
+          ],
+          { cancelable: false }
+        );
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () => backHandler.remove()
+    }, [])
+  );
+
+  useEffect(()=>{
+    getToken()
+    fetchAllOrders()
+  },[token])
+
+  const getToken = async () =>{
+    let token = await getUserToken()
+    // console.log("token =>",token)
+    setToken(token)
+  }
+
+  const fetchAllOrders = async () =>{
+    let url = PROVIDER_URLS.GET_PROVIDER_ORDERS
+    let response = await makeGetApiCall(url,token)
+    console.log("Home Screen Data =====>",response)
+  }
+
+
+  // <--------- Below this we have all the UI stuff ------->
 
   const renderSearchField = () => (
     <View style={styles.searchContainer}>
@@ -327,6 +372,7 @@ const styles = StyleSheet.create({
     height: 90,
     flexDirection: 'row',
     marginVertical: 10,
+    // backgroundColor:"red"
   },
   imageContainer: {
     flex: 0.2,
@@ -340,7 +386,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   orderDetails: {
-    flex: 0.7,
+    flex: 0.68,
     justifyContent: 'space-around',
     paddingLeft: 12,
     paddingVertical: 5,
@@ -371,7 +417,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   priceContainer: {
-    flex: 0.1,
+    flex: 0.12,
   },
   priceRow: {
     flexDirection: 'row',

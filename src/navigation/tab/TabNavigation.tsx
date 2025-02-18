@@ -35,8 +35,8 @@ const getTabIcon = (focused, activeIcon, inactiveIcon) => {
 };
 
 const TabNavigation = () => {
-  
-  const tabsConfig = {
+  const tabConfig = {
+    tabBarHideOnKeyboard:true,
     tabBarStyle: {
       height: 80,
       borderTopLeftRadius: 14,
@@ -49,7 +49,6 @@ const TabNavigation = () => {
       shadowOpacity: 0.1, // Shadow transparency
       shadowRadius: 6, // Blurred effect
     },
-  
     tabBarLabelStyle: {
       fontSize: 14,
       fontWeight: '600',
@@ -57,10 +56,10 @@ const TabNavigation = () => {
     },
     tabBarActiveTintColor: COLORS.primary,
     tabBarInactiveTintColor: COLORS.black,
-  };
+  }
 
   return (
-    <Tab.Navigator screenOptions={tabsConfig}>
+    <Tab.Navigator screenOptions={tabConfig}>
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
@@ -76,7 +75,7 @@ const TabNavigation = () => {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="ChatScreen"
         component={ChatScreen}
         options={{
@@ -89,7 +88,7 @@ const TabNavigation = () => {
               ICONS.chat 
             ),
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="OrderScreen"
@@ -108,7 +107,7 @@ const TabNavigation = () => {
 
       <Tab.Screen
         name="TabProfileScreen"
-        component={OrderDetails}
+        component={EditScreen}
         options={{
           title: 'Profile',
           headerShown: false,

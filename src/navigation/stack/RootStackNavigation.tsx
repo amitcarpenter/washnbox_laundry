@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import TabNavigation from '../tab/TabNavigation'
@@ -9,14 +9,18 @@ import EditScreen from '../../screens/edit/EditScreen'
 import OrderDetails from '../../screens/orders/OrderDetails'
 import RegisterPhoneScreen from '../../auth/phone/RegisterPhoneScreen'
 import OtpScreen from '../../auth/otp/OtpScreen'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NAVIGATE_TO } from '../../utils/config'
 
 const Stack = createStackNavigator()
 
-const RootStackNavigation = () => {
+type Props = {
+  screenName:string
+}
+const RootStackNavigation = (props:Props) => {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='OnbordingScreen' >
-
+    <Stack.Navigator initialRouteName={props.screenName} >
       <Stack.Screen 
         name='OnbordingScreen'
         component={OnboardingScreen}

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, FlatList, TextInput } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, FlatList, TextInput, Dimensions } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Container from '../../component/view/Container';
 import Header from '../../component/header/Header';
@@ -14,20 +14,56 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-check-box'
 import OutLinedButton from '../../component/button/OutLinedButton';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { ProfileDataType, ServiceItems, Services } from '../../utils/type';
+import { checkIsDataValid, getLocationCoordinates, getUserToken, makeGetApiCall, makePostApiCall, renderAlertBox } from '../../utils/helper';
+import { NAVIGATE_TO, PROVIDER_URLS } from '../../utils/config';
+import { getAddressFromCoordinates } from '../../utils/helper';
+import { useSelector } from 'react-redux';
+
+
+const WIDTH = Dimensions.get("window").width
+const HEIGHT = Dimensions.get("window").height
 
 const EditScreen = () => {
 
   const navigation = useNavigation()
   const [value, setValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
-  const [valid, setValid] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
   const phoneInput = useRef<PhoneInput>(null);
-  const [imageUri, setImageUri] = useState(IMAGES.profile)
-  const [selectedId, setSelectedId] = useState();
+  const [imageUri, setImageUri] = useState("")
   const refRBSheet = useRef();
   const [selectedClothId,setSelectedClothId] = useState([])
-  const [selectedClothTypeItem, setSelectedClothTypeItems] = useState([])
+  const [selectedClothTypeItem, setSelectedClothTypeItems] = useState<Services>([])
+  const [businessName, setBusinessName] = useState("")
+  const [address, setAddress] = useState("")
+  const [upiId,setUpiId] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [services,setServices] = useState([])
+  const [profile, setProfile] = useState({})
+  const [clothsTypes, setClothsType] = useState([])
+  const [token, setToken] = useState("")
+  const number = useSelector(state=>state.data.loginData.number)
+  const [coordinates,setCoordinates] = useState({})
+
+  useEffect(()=>{
+    getToken()
+    fetchClothsTypesForBottomSheet()
+  },[token])
+
+  useEffect(()=>{
+    getLocationPermission()
+    fetchCoordinates()
+  },[])
+
+  const getToken = async () =>{
+    let token = await getUserToken()
+    setToken(token)
+  }
+
+  const fetchClothsTypesForBottomSheet  = async () =>{
+    let data = await makeGetApiCall(PROVIDER_URLS.GET_ALL_LAUNDRY_ITEMS,token)
+  }
 
   const radioButtons = useMemo(() => ([
     {
@@ -48,6 +84,7 @@ const EditScreen = () => {
   ]), []);
 
   const selectImage = () =>{
+    let data;
     const options = {
       mediaType:"photo",
       quantity:1
@@ -59,16 +96,25 @@ const EditScreen = () => {
       } else if (response.errorMessage) {
         Alert.alert('Error:', response.errorMessage);
       } else {
-       console.log(response?.assets[0].uri);
+        // data = {
+        //   name: response.assets[0].fileName || 'photo.jpg',
+        //   type: response.assets[0].type || 'image/jpeg',
+        //   uri : response?.assets[0].uri
+        // }
+        setImageUri(response?.assets[0].uri)
       }
     })
+    // setProfile(data)
   }
 
   const renderProfileImage = () => {
     return (
       <View style={styles.profileContainer}>
         <View style={styles.profileImageWrapper}>
-          <Image source={IMAGES.profile} style={styles.profileImage} />
+          <Image 
+            source={imageUri?{uri:imageUri}:IMAGES.profile}
+            style={styles.profileImage} 
+          />
           <TouchableOpacity onPress={selectImage} activeOpacity={0.95} style={styles.cameraButton}>
             <Image source={IMAGES.camera} style={styles.cameraIcon} />
           </TouchableOpacity>
@@ -77,49 +123,65 @@ const EditScreen = () => {
     );
   };
 
-  const renderCheckBoxes = () =>{
-    return(
-      <>
-      <CheckBox
-            onClick={()=>{
+  // const renderCheckBoxes = () =>{
+  //   return(
+  //     <>
+  //     <CheckBox
+  //           onClick={()=>{
             
-            }}
-            isChecked={true}
-            checkBoxColor={COLORS.primary}
-            rightTextView={
-              <View style={styles.checkBoxTextContainer}>
-                  <Text style={styles.checkBoxText}>Wash</Text>
-              </View>
-            }
-          />
+  //           }}
+  //           isChecked={true}
+  //           checkBoxColor={COLORS.primary}
+  //           rightTextView={
+  //             <View style={styles.checkBoxTextContainer}>
+  //                 <Text style={styles.checkBoxText}>Wash</Text>
+  //             </View>
+  //           }
+  //         />
 
-          <CheckBox
-            onClick={()=>{
+  //         <CheckBox
+  //           onClick={()=>{
             
-            }}
-            isChecked={true}
-            checkBoxColor={COLORS.primary}
-            rightTextView={
-              <View style={styles.checkBoxTextContainer}>
-                <Text style={styles.checkBoxText}>Iron</Text>
-              </View>
-            }
-          />
+  //           }}
+  //           isChecked={true}
+  //           checkBoxColor={COLORS.primary}
+  //           rightTextView={
+  //             <View style={styles.checkBoxTextContainer}>
+  //               <Text style={styles.checkBoxText}>Iron</Text>
+  //             </View>
+  //           }
+  //         />
 
-          <CheckBox
-            onClick={()=>{}}
-            isChecked={true}
-            checkBoxColor={COLORS.primary}
-            rightTextView={
-              <View style={styles.checkBoxTextContainer}>
-                <Text style={styles.checkBoxText}>Dry Wash</Text>
-              </View>
-            }
-          />
-      </>
-    )
-  }
+  //         <CheckBox
+  //           onClick={()=>{}}
+  //           isChecked={true}
+  //           checkBoxColor={COLORS.primary}
+  //           rightTextView={
+  //             <View style={styles.checkBoxTextContainer}>
+  //               <Text style={styles.checkBoxText}>Dry Wash</Text>
+  //             </View>
+  //           }
+  //         />
+  //     </>
+  //   )
+  // }
 
+  const onServicePriceEnter = (type: string, name: string, text: string) => {
+    const updatedItems = selectedClothTypeItem.map(item => {
+      if (item.type === type) {
+        return {
+          ...item,
+          services: item.services.map(service =>
+            service.name === name ? { ...service, price: text } : service
+          ),
+        };
+      }
+      return item;
+    });
+  
+    setSelectedClothTypeItems(updatedItems);
+  };
+  
 
   const renderSelectedClothsTypeItems = () =>{
     return(
@@ -134,14 +196,15 @@ const EditScreen = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.detailsContainer}>
-              {['Wash', 'Dry Wash', 'Iron'].map((service, index) => (
+              {item?.services.map((service, index) => (
                 <View key={index} style={styles.serviceBox}>
-                  <Text style={styles.serviceText}>{service}</Text>
+                  <Text style={styles.serviceText}>{service.name}</Text>
                   <TextInput 
-                    placeholder='$ 12' 
+                    placeholder='$ 0' 
                     placeholderTextColor={COLORS.primary}
                     keyboardType="numeric"
-                    style={[styles.input, { color: COLORS.primary }]} 
+                    style={[styles.input, { color: COLORS.primary }]}
+                    onChangeText={(text)=>onServicePriceEnter(item.type,service.name,text)}
                   />
                 </View>
               ))}
@@ -149,7 +212,7 @@ const EditScreen = () => {
           </View>
         )
       })}
-
+  
       <OutLinedButton 
         onPress={openBottomSheet}
         title='Add more item' 
@@ -170,21 +233,27 @@ const EditScreen = () => {
           placeholder="Enter your business name" 
           labelStyle={styles.labelStyle}
           containerStyle={styles.inputContainer}
+          onChangeText={text=>(
+            setBusinessName(text)
+          )}
         />
 
         <View style={styles.locationContainer}>
           <Text style={styles.locationLabel}>Location on map</Text>
-          <Image source={IMAGES.map} style={styles.mapImage} />
-          <Text style={styles.addressText}>16, Nahar Shah Wali Rd, Mamta Colony, Indore, Madhya Pradesh 452010, India</Text>
+          <Image source={IMAGES.map} style={{width:"100%",borderRadius:10}} />
+          <Text style={styles.addressText}>{address || "Loading ..."}</Text>
         </View>
 
-        <Input 
+        {/* <Input 
           keyboardType="email-address" 
           label='UPI ID for Payment' 
           placeholder="Enter your UPI ID" 
           labelStyle={styles.labelStyle}
           containerStyle={styles.inputContainer}
-        />
+          onChangeText={text=>{
+            setUpiId(text)
+          }}
+          /> */}
 
         <Input 
           keyboardType="email-address" 
@@ -192,16 +261,21 @@ const EditScreen = () => {
           placeholder="Enter your email" 
           labelStyle={styles.labelStyle}
           containerStyle={styles.inputContainer}
-        />
+          onChangeText={text=>{
+            setEmail(text)
+          }}
+          />
 
         {/* phone input */}
         <View style={{marginTop:20}}>
           <Text style={styles.labelStyle}>Phone</Text>
           <PhoneInput
             ref={phoneInput}
-            defaultValue={value}
+            defaultValue={number}
+            disabled={true}
             defaultCode="IN"
             layout="second"
+            placeholder='Phone number'
             containerStyle={styles.phoneInputStyle}
             onChangeText={(text) => { setValue(text)}}
             onChangeFormattedText={(text) => { setFormattedValue(text) }}
@@ -223,13 +297,10 @@ const EditScreen = () => {
           />
         </View>
 
-        <View style={styles.locationContainer}>
-        </View>
-
         {/* services */}
-        <View>
+        <View style={{marginTop:20}}>
           <Text style={styles.locationLabel}>Services</Text>
-          {renderCheckBoxes()}
+          {/* {renderCheckBoxes()} */}
         </View>
 
         {/* selected cloths item */}
@@ -242,12 +313,20 @@ const EditScreen = () => {
     Geolocation.requestAuthorization()
   }
 
-  useEffect(()=>{
-    getLocationPermission()
-  },[])
+  const fetchCoordinates = async () => {
+    try {
+      const coordinates = await getLocationCoordinates();
+      setCoordinates(coordinates)
+      if(coordinates) fetchAddressFromCoordinates(coordinates)
+      // console.log("coordinates =>", coordinates);
+    } catch (error) {
+      console.error("Failed to fetch coordinates:", error)
+    }
+  };
 
-  const getLocation = () =>{
-    navigation.navigate("TabNavigation")
+  const fetchAddressFromCoordinates = async (coordinates) =>{
+    let address = await getAddressFromCoordinates(coordinates.latitude, coordinates.longitude)
+    setAddress(address)
   }
 
   const onSelectClothType = (item:any) =>{
@@ -313,13 +392,53 @@ const EditScreen = () => {
   const openBottomSheet = () =>{
     refRBSheet?.current?.open()
   }
+  
+  const sumitDetails = async () => {
+    let formData = new FormData()
+    let data:ProfileDataType = {
+      shop_name:businessName,
+      address:address,
+      email:email,
+      phone:phone,
+      upi_id:upiId,
+      services:selectedClothTypeItem
+    }
+
+    let status = await checkIsDataValid(data)
+
+    if(!status.isDeatilsValid){
+      renderAlertBox(status)
+    }else{
+      let data = {
+        name:businessName,
+        shop_name:businessName,
+        laundry_address:address,
+        email:email,
+        service_details:selectedClothTypeItem,
+        latitude:coordinates.lattitude,
+        longitude:coordinates.longitude,
+        file:profile,
+        // upiId:upiId 
+      }
+      // formData.append('shop_name',businessName)
+      // formData.append('address',address)
+      // formData.append("email",email)
+      // formData.append("phone",phone)
+      // formData.append("services",JSON.stringify(selectedClothTypeItem))
+      // formData.append("profile",profile)
+      let response =  await makePostApiCall(PROVIDER_URLS.EDIT_LAUNDRY_PROFILE,data,true,token)
+      if(response.success){
+        navigation.navigate(NAVIGATE_TO.TAB_NAVIGATION as never)
+      }
+    }
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContainer}>
-      <Header title='Edit Profile' />
+      <Header title='Complete Profile' />
       {renderProfileImage()}
       {renderInputFields()}
-      <Button onPress={getLocation} title='Update' style={styles.updateButton} />
+      <Button onPress={sumitDetails} title='Update' style={styles.updateButton} />
       {renderBottomSheet()}
     </ScrollView>
   );
@@ -389,7 +508,7 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     marginTop: 20,
-    alignSelf:"flex-start"
+    // alignSelf:"flex-start"
   },
   locationLabel: {
     color: COLORS.primary,
@@ -399,9 +518,9 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   mapImage: {
-    width: "100%",
+    // width: "100%",
     alignSelf: "center",
-    borderRadius: 12,
+    // borderRadius: 12,
   },
   addressText: {
     fontSize: 16,
