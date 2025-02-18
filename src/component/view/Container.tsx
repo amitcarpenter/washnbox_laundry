@@ -18,7 +18,7 @@ const Container = (props: Props) => {
     >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView
-                scrollEnabled={false}
+                // scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollViewContent} 
                 keyboardShouldPersistTaps="handled"

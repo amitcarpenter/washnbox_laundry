@@ -1,20 +1,29 @@
-import { View, Text, TouchableWithoutFeedback, ScrollView, Platform, KeyboardAvoidingView, Keyboard, StyleSheet } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableWithoutFeedback, ScrollView, Platform, KeyboardAvoidingView, Keyboard, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { COLORS } from '../../constant/constant';
 import Header from '../../component/header/Header';
 import { OtpInput } from "react-native-otp-entry";
 import Button from '../../component/button/Button';
 import Container from '../../component/view/Container';
 import { useNavigation } from '@react-navigation/native';
-// import styles from './styles'; // Import the styles from a separate file
-
+import { useSelector } from 'react-redux';
+import { makePostApiCall } from '../../utils/helper';
+import { PROVIDER_URLS } from '../../utils/config';
+import AsyncStorage from "@react-native-async-storage/async-storage"
 const OtpScreen = () => {
 
   const navigation = useNavigation()
+  const [value, setValue] = useState("")
+  const loginData = useSelector(state=>state.data.loginData)
+  console.log("otp screen =>",loginData.result.data)
+
+  const otpValue = loginData.result.data || "";  
+  const otpRef = useRef(null);
 
   const renderOtpInput = () =>{
     return(
       <OtpInput
+        ref={otpRef}
         numberOfDigits={4}
         focusColor="green"
         autoFocus={false}
@@ -39,6 +48,36 @@ const OtpScreen = () => {
       />
     )
   }
+
+  const onSubmitinOtp = async () => { 
+    let data = {
+      "mobile_number" : loginData.formattedValue,
+      "otp" : loginData.result.data
+    }
+    let url = PROVIDER_URLS.LOGIN_WITH_OTP
+    let response = await makePostApiCall(url,data)
+    await checkResponse(response)
+  }
+
+  const checkResponse = async (response:any) => {
+        if(response?.success){
+          await storeToken(response)
+          navigation.navigate("ProfileScreen")
+        }else{
+          Alert.alert("Failed","Something went wrong",[
+            {
+              text:"OK",
+              onPress:()=>{}
+            }
+          ])
+        }
+  }
+
+  const storeToken = async (response:any) =>{
+    let loginData = JSON.stringify(response)
+    await AsyncStorage.setItem("loginData",loginData)
+  }
+
   return (
         <Container>
           <Header title='OTP' />
@@ -47,12 +86,13 @@ const OtpScreen = () => {
             <Text style={styles.verificationText}>Type the verification code {"\n"} we’ve sent you</Text>
 
             {renderOtpInput()}
-            <Text style={styles.phoneNumber}>+1 897-897-8970 <Text style={styles.editText}>Edit</Text></Text>
+            <Text style={styles.phoneNumber}>{loginData.number} <Text style={styles.editText}> Edit</Text></Text>
             <Text style={styles.resendText}>Send again</Text>
 
+            <Text style={{position:"absolute",bottom:160}}>{otpValue || "try again"}</Text>
             <Button 
               title='Continue' 
-              onPress={()=>navigation.navigate("ProfileScreen")} 
+              onPress={onSubmitinOtp} 
             />
           </View>
         </Container>

@@ -6,6 +6,7 @@ const dataSlice = createSlice({
         data: null,
         loading: false,
         error: null,
+        loginData:{}
     },
     reducers: {
         fetchDataRequest: (state) => {
@@ -19,8 +20,16 @@ const dataSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        addLoginData:(state,action)=>{
+            state.loginData = action.payload
+        }
     },
 });
 
-export const { fetchDataRequest, fetchDataSuccess, fetchDataFailure } = dataSlice.actions;
+export const { 
+    fetchDataRequest, 
+    fetchDataSuccess, 
+    fetchDataFailure,
+    addLoginData
+ } = dataSlice.actions;
 export default dataSlice.reducer;
