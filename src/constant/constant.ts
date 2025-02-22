@@ -117,7 +117,8 @@ export const IMAGES = {
     camera:require("../assets/images/camera.png"),
     map:require("../assets/images/map.png"),
     my_laundry:require("../assets/images/My_Laundry.png"),
-    success:require("../assets/images/success.png")
+    success:require("../assets/images/success.png"),
+    vendor:require("../assets/images/vendor.png"),
 }
 
 export const ICONS = {
@@ -135,7 +136,8 @@ export const ICONS = {
     picking_box:require("../assets/icons/picking_box.png"),
     phone:require("../assets/icons/phone.png"),
     cancel:require("../assets/icons/cancel.png"),
-    delete:require("../assets/icons/delete.png")
+    delete:require("../assets/icons/delete.png"),
+    direction:require("../assets/icons/direction.png")
 }
 
 export const USERS = {

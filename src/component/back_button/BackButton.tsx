@@ -16,14 +16,18 @@ const BackButton = (props:Props) => {
     navigation.goBack()
   }
   return (
-    <TouchableOpacity onPress={props.onPress} style={props.isFilter?styles.filterButton:styles.button}>
-      {
-        props.isFilter ?
+    <>
+    {props.isFilter?(
+      <TouchableOpacity onPress={props.onPress} style={props.isFilter?styles.filterButton:styles.button}>
         <Image source={ICONS.filter} style={styles.filterImageStyle} />
-        :
+      </TouchableOpacity>
+    ):
+      <TouchableOpacity onPress={onBackPress} style={props.isFilter?styles.filterButton:styles.button}>
         <Image source={IMAGES.back_icon} style={styles.image} />
-      }
-    </TouchableOpacity>
+      </TouchableOpacity>
+    }
+    </>
+   
   );
 };
 
