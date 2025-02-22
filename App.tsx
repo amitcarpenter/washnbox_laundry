@@ -1,12 +1,6 @@
 import { View, Text, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Onboarding from 'react-native-onboarding-swiper'
-import OnboardingScreen from './src/screens/common/onboarding/OnboardingScreen'
-import Carousel from 'react-native-snap-carousel'
-import { COLORS, onboardingData } from './src/constant/constant'
-import RegisterPhoneScreen from './src/auth/phone/RegisterPhoneScreen'
-import OtpScreen from './src/auth/otp/OtpScreen'
-import EditScreen from './src/screens/edit/EditScreen'
+import { COLORS } from './src/constant/constant'
 import RootStackNavigation from './src/navigation/stack/RootStackNavigation'
 import { Provider } from 'react-redux'
 import store from './src/redux/store'
@@ -45,8 +39,9 @@ const App = () => {
 
   if (isLoading) return renderLoadingScreen();
 
+     
   return (
-    <Provider store={store}>
+     <Provider store={store}>
       <RootStackNavigation screenName={screenName} />
     </Provider>
   );

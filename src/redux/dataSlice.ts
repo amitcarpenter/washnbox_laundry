@@ -6,7 +6,9 @@ const dataSlice = createSlice({
         data: null,
         loading: false,
         error: null,
-        loginData:{}
+        loginData:{},
+        selectedUser:{},
+        selectedOrderDetails:{},
     },
     reducers: {
         fetchDataRequest: (state) => {
@@ -22,7 +24,13 @@ const dataSlice = createSlice({
         },
         addLoginData:(state,action)=>{
             state.loginData = action.payload
-        }
+        },
+        addSelectedUserData:(state,action)=>{
+            state.selectedUser = action.payload
+        },
+        addSelectedOrderDetails:(state,action)=>{
+            state.selectedOrderDetails = action.payload
+        },
     },
 });
 
@@ -30,6 +38,8 @@ export const {
     fetchDataRequest, 
     fetchDataSuccess, 
     fetchDataFailure,
-    addLoginData
+    addLoginData,
+    addSelectedOrderDetails,
+    addSelectedUserData
  } = dataSlice.actions;
 export default dataSlice.reducer;

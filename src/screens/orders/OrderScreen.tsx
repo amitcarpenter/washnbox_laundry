@@ -1,55 +1,84 @@
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Pressable } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from '../../component/view/Container'
 import Header from '../../component/header/Header'
 import { COLORS, ICONS, OrderItems } from '../../constant/constant'
 import { useNavigation } from '@react-navigation/native'
 import Modal from "react-native-modal"
+import { getUserToken, makeGetApiCall } from '../../utils/helper'
+import { PROVIDER_URLS } from '../../utils/config'
+import { useDispatch } from 'react-redux'
+import { addSelectedOrderDetails, addSelectedUserData } from '../../redux/dataSlice'
 
 const OrderScreen = () => {
 
   const navigation  = useNavigation()
+  const [token, setToken] = useState('')
+  const [orderList, setOrderList] = useState([])
+  const dispatch = useDispatch()
 
-  const navigateToOrderDetails = () =>{
+
+  useEffect(()=>{
+    getToken()
+    fetchAllOrders()
+  },[token])
+ 
+  const getToken = async () =>{
+    let token = await getUserToken()
+    // console.log("token =>",token)
+    setToken(token)
+  }
+   
+  const fetchAllOrders = async () =>{
+    let url = PROVIDER_URLS.GET_PROVIDER_ACTIVE_ORDERS
+    let response = await makeGetApiCall(url,token)
+    setOrderList(response.result.data)
+    // console.log("response =",response.result)
+  }
+   
+  const navigateToOrderDetails = (item:any) =>{
+    dispatch(addSelectedUserData(item?.user))
+    dispatch(addSelectedOrderDetails(item))
     navigation.navigate("OrderDetailScreen")
   }
 
-  const renderOrderStatusBasedOnCode = (code:number,item:any) =>{
-    switch (code) {
-      case 0:
+  const renderOrderStatusBasedOnCode = (status:string,item:any) =>{
+    switch (status) {
+      case "Ready For Pickup":
       return(
         <Text style={styles.orderReadyStatusStyle}>{item?.order_status}</Text>
       )
-      case 1:
+      case "Pending":
         return(
-          <Text style={styles.orderInprogressStatusStyle}>{item?.order_status}</Text>
+          <Text style={styles.orderInprogressStatusStyle}>{status}</Text>
         )
-      case 2:
+      case "Recived":
         return(
           <Text style={styles.orderRecivedStatusStyle}>{item?.order_status}</Text>
         )
       default:
-        return(<Text>Un</Text>);
+        return(<Text>unavailable</Text>);
     }
   }
 
   const renderOrderItem = ({item}) =>{
+    console.log("item ====>",item)
     return(
-      <TouchableOpacity onPress={navigateToOrderDetails} style={styles.orderItemContainer}>
+      <TouchableOpacity onPress={()=>navigateToOrderDetails(item)} style={styles.orderItemContainer}>
         <View style={styles.orderItemHeader}>
-          <Text style={styles.orderDateText}>{item?.date_time}</Text>
-          {renderOrderStatusBasedOnCode(item?.order_status_code,item)}
+          <Text style={styles.orderDateText}>{new Date(item?.updated_at).toLocaleString()}</Text>
+          {renderOrderStatusBasedOnCode(item?.status,item)}
         </View>
         <View style={styles.orderItemFooter}>
           <View style={styles.orderDetailsContainer}>
-            <Text style={styles.orderIdText}>OID {item?.order_id}</Text>
-            <Text style={styles.lockCodeText}>Lock Code - {item?.lock_code}</Text>
+            <Text style={styles.orderIdText} ellipsizeMode='tail'>OID: {item?.order_id}</Text>
+            <Text style={styles.lockCodeText} ellipsizeMode='tail'>Lock Code - {item?.lockbox?.code}</Text>
           </View>
           <View style={styles.paymentContainer}>
-            <Text style={styles.paymentStatus}>{item?.payment_status}</Text>
+            <Text style={styles.paymentStatus}>{item?.order_payment?.payment_method}</Text>
             <View style={styles.rowRupee}>
               <Image source={ICONS.rupees} style={styles?.rupeesIcon}/>
-              <Text style={styles.paymentAmount}>{item?.price}</Text>
+              <Text style={styles.paymentAmount} ellipsizeMode='tail'>{item?.total_price}</Text>
             </View>
           </View>
         </View>
@@ -65,7 +94,11 @@ const OrderScreen = () => {
         <Text style={styles.activeOrdersText}>6 Active Orders</Text>
       </View>
 
-      <FlatList data={OrderItems} scrollEnabled={true} renderItem={(item)=>renderOrderItem(item)} />
+      <FlatList 
+        data={orderList} 
+        scrollEnabled={true} 
+        renderItem={(item)=>renderOrderItem(item)} 
+      />
 
     </Container>
   )
@@ -133,7 +166,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   orderDetailsContainer: {
-    flex: 0.6,
+    flex: 0.5,
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
@@ -153,7 +186,7 @@ const styles = StyleSheet.create({
     borderRadius: 6
   },
   paymentContainer: {
-    flex: 0.4,
+    flex: 0.5,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -164,7 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     lineHeight: 22,
-    color: COLORS.primary,
+    // color: COLORS.primary,
     // paddingLeft: 20
   },
   paymentAmount: {

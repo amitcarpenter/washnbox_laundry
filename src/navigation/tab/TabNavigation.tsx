@@ -8,6 +8,7 @@ import ProfileScreen from '../../screens/profile/ProfileScreen';
 import { COLORS, ICONS } from '../../constant/constant';
 import OrderDetails from '../../screens/orders/OrderDetails';
 import EditScreen from '../../screens/edit/EditScreen';
+import VerndorDetailScreen from '../../screens/vendor/VerndorDetailScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -107,7 +108,7 @@ const TabNavigation = () => {
 
       <Tab.Screen
         name="TabProfileScreen"
-        component={EditScreen}
+        component={ProfileScreen}
         options={{
           title: 'Profile',
           headerShown: false,

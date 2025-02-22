@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform, Alert, BackHandler } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Container from '../../component/view/Container';
-import { COLORS, HomeScreenData, ICONS, IMAGES } from '../../constant/constant';
+import { COLORS, HomeScreenData, ICONS, IMAGES, USERS } from '../../constant/constant';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Modal from "react-native-modal"
 import Header from '../../component/header/Header';
@@ -10,6 +10,9 @@ import Dropdown from "react-native-dropdown-picker"
 import { PROVIDER_URLS } from '../../utils/config';
 import { getUserToken, makeGetApiCall } from '../../utils/helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from './styles';
+import { addSelectedOrderDetails, addSelectedUserData } from '../../redux/dataSlice';
+import { useDispatch } from 'react-redux';
 
 
 const deviceWidth = Dimensions.get("window").width;
@@ -35,29 +38,20 @@ const HomeScreen = () => {
     // { label: 'Ready for Pick', value: 'Ready for Pick' }
   ]);
   const [token, setToken] = useState("")
-
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [pendingData,setPendingData] = useState([])
+  const dispatch = useDispatch()
   
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        Alert.alert(
-          "Exit App",
-          "Are you sure you want to exit?",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Yes", onPress: () => BackHandler.exitApp() },
-          ],
-          { cancelable: false }
-        );
-        return true;
-      };
+  useEffect(() => {
+    const backAction = () => {
+      console.log('Back button pressed');
+      return true
+    };
 
-      const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-      return () => backHandler.remove()
-    }, [])
-  );
+    return () => backHandler.remove()
+  }, []);
 
   useEffect(()=>{
     getToken()
@@ -66,14 +60,14 @@ const HomeScreen = () => {
 
   const getToken = async () =>{
     let token = await getUserToken()
-    // console.log("token =>",token)
     setToken(token)
   }
 
   const fetchAllOrders = async () =>{
     let url = PROVIDER_URLS.GET_PROVIDER_ORDERS
     let response = await makeGetApiCall(url,token)
-    console.log("Home Screen Data =====>",response)
+    setPendingData(response.result.data)
+    // console.log("Home Screen Data =====>",response.result.data)
   }
 
 
@@ -101,35 +95,65 @@ const HomeScreen = () => {
     </View>
   );
 
-  const renderOrderItem = ({ item }) => (
-    <View style={styles.orderItemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={item.image} style={styles.orderImage} />
-      </View>
-      <View style={styles.orderDetails}>
-        <Text style={styles.orderName}>{item.name}</Text>
-        <Text style={styles.orderDateTime}>{item.date_time}</Text>
-        <View style={styles.servicesContainer}>
-          {item.services.map((service, index) => (
-            <Text key={index} style={styles.serviceText} ellipsizeMode='tail'>
-              {service}
-            </Text>
-          ))}
+  const navigateToOrderDetails = (item:any) =>{
+    let orderDetails = {
+      image:item.user.profile_image,
+      name:item.user.name || "Not Available",
+      updated_at:new Date(item?.order_payment?.updated_at).toLocaleString(),
+      services:item?.item_details || [],
+      total_price:item.total_price,
+      order_id:item?.order_id,
+      item_details:item?.item_details,
+      scheduled_pickup_time: null,
+    }
+    dispatch(addSelectedUserData(item?.user))
+    dispatch(addSelectedOrderDetails(orderDetails))
+    navigation.navigate("OrderDetailScreen")
+  }
+
+  const renderOrderItem = ({ item }) => {
+    const details = {
+      image:item.user.profile_image,
+      name:item.user.name || "Not Available",
+      date:new Date(item?.order_payment?.updated_at).toLocaleString(),
+      services:item?.item_details || [],
+      total_price:item.total_price,
+      order_id:item?.order_id,
+      item_details:item?.item_details,
+      scheduled_pickup_time: null,
+    }
+    // console.log(details)
+    return(
+      <TouchableOpacity activeOpacity={0.8} onPress={()=>navigateToOrderDetails(item)} style={styles.orderItemContainer}>
+        <View style={styles.imageContainer}>
+          <Image source={USERS.user1} style={styles.orderImage} />
         </View>
-      </View>
-      <View style={styles.priceContainer}>
-        <View style={styles.priceRow}>
-          <Image source={ICONS.rupees} style={styles.rupeesIcon} />
-          <Text style={styles.orderPrice}>{item.price}</Text>
+        <View style={styles.orderDetails}>
+          <Text style={styles.orderName}>{details.name}</Text>
+          <Text style={styles.orderDateTime}>{details.date}</Text>
+          <View style={styles.servicesContainer}>
+            {details.services?.map((service,index) => (
+              <Text key={index} style={styles.serviceText} ellipsizeMode='tail'>
+                {service?.item_name}
+              </Text>
+            ))}
+          </View>
         </View>
-      </View>
-    </View>
-  );
+        <View style={styles.priceContainer}>
+          <View style={styles.priceRow}>
+            <Image source={ICONS.rupees} style={styles.rupeesIcon} />
+            <Text style={styles.orderPrice}>{item.total_price}</Text>
+          </View>
+        </View>
+    </TouchableOpacity>
+    )
+    
+  };
 
   const renderOrdersList = () =>{
     return(
       <FlatList
-          data={HomeScreenData}
+          data={pendingData}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
           renderItem={renderOrderItem}
@@ -285,154 +309,6 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  containerStyle: {
-    paddingBottom: 0,
-  },
-  topSection: {
-    width: '100%',
-    height: '15%',
-  },
-  bottomSection: {
-    width: '100%',
-    height: '85%',
-    paddingTop: 10,
-  },
-  headerContainer: {
-    width: '100%',
-    height: '50%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logo: {
-    width: 45,
-    height: 50,
-    resizeMode: 'contain',
-  },
-  laundryLogo: {
-    width: '45%',
-    height: 29,
-  },
-  notificationIcon: {
-    width: 26,
-    height: 26,
-    resizeMode: 'contain',
-  },
-  filterButton: {
-    width: 52,
-    height: 52,
-    borderRadius: 12,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: COLORS.borderColor,
-  },
-  filterIcon: {
-    width: 22,
-    height: 22,
-    resizeMode: 'center',
-  },
-  searchContainer: {
-    width: '100%',
-    height: '50%',
-    justifyContent: 'center',
-  },
-  searchField: {
-    width: '100%',
-    height: 60,
-    backgroundColor: COLORS.search_field_color,
-    borderRadius: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.borderColor,
-  },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-    marginHorizontal: 12,
-  },
-  searchInput: {
-    flex: 1,
-  },
-  pendingOrdersText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.black,
-    lineHeight: 19,
-  },
-  listContainer: {
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-  orderItemContainer: {
-    width: '100%',
-    height: 90,
-    flexDirection: 'row',
-    marginVertical: 10,
-    // backgroundColor:"red"
-  },
-  imageContainer: {
-    flex: 0.2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  orderImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    resizeMode: 'contain',
-  },
-  orderDetails: {
-    flex: 0.68,
-    justifyContent: 'space-around',
-    paddingLeft: 12,
-    paddingVertical: 5,
-  },
-  orderName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: 'black',
-    lineHeight: 19,
-  },
-  orderDateTime: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.black,
-    lineHeight: 20,
-  },
-  servicesContainer: {
-    flexDirection: 'row',
-  },
-  serviceText: {
-    backgroundColor: '#FFF3FA',
-    color: COLORS.black,
-    fontWeight: '500',
-    fontSize: 14,
-    padding: 4,
-    paddingHorizontal: 10,
-    marginHorizontal: 5,
-    borderRadius: 5,
-  },
-  priceContainer: {
-    flex: 0.12,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rupeesIcon: {
-    width: 10,
-    height: 12,
-    resizeMode: 'contain',
-  },
-  orderPrice: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: 'black',
-  },
-});
+
 
 export default HomeScreen;

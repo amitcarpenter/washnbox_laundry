@@ -10,6 +10,8 @@ type Props = {
     placeholder?:string,
     containerStyle?:StyleProp<ViewStyle>
     onChangeText?:(value:string)=>void
+    value?:string,
+    editable?:boolean
 }
 const Input = (props:Props) => {
   return (
@@ -23,6 +25,8 @@ const Input = (props:Props) => {
         </Text>
 
       <TextInput 
+        editable={props.editable}
+        value={props.value}
         placeholder={props.placeholder || "+91"} 
         style={[
             styles.inputFieldStyle,

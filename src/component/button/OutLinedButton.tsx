@@ -6,10 +6,11 @@ type Props = {
   style?:StyleProp<ViewStyle>
   onPress?:()=>void;
   title?:string
+  disabled?:boolean
 }
 const OutLinedButton = (props:Props) => {
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={props.onPress} style={[styles.buttonStyle,props.style]}>
+    <TouchableOpacity disabled={props.disabled} activeOpacity={0.8} onPress={props.onPress} style={[styles.buttonStyle,props.style]}>
       <Text style={styles.buttonTitleStyle}>{props.title || "Continue"}</Text>
     </TouchableOpacity>
   )
