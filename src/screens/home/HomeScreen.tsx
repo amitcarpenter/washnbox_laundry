@@ -14,7 +14,6 @@ import { styles } from './styles';
 import { addSelectedOrderDetails, addSelectedUserData } from '../../redux/dataSlice';
 import { useDispatch } from 'react-redux';
 
-
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height
 
