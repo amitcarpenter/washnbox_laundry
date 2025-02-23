@@ -53,10 +53,10 @@ const ProfileScreen = () => {
     getProfileData()
   },[token])
 
-  useEffect(()=>{
-    getLocationPermission()
-    fetchCoordinates()
-  },[])
+  // useEffect(()=>{
+  //   getLocationPermission()
+  //   fetchCoordinates()
+  // },[])
 
   const getToken = async () =>{
     let token = await getUserToken()
@@ -201,8 +201,6 @@ const ProfileScreen = () => {
   
     return { countryCode: "+91", localNumber: "" }; // Invalid case
   };
-  
-  
 
   const renderInputFields = () => {
     const { countryCode, localNumber } = extractPhoneDetails(profileData?.full_number || "");

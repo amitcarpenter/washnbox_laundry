@@ -64,9 +64,9 @@ const HomeScreen = () => {
 
   const fetchAllOrders = async () =>{
     let url = PROVIDER_URLS.GET_PROVIDER_ORDERS
-    let response = await makeGetApiCall(url,token)
-    setPendingData(response.result.data)
-    // console.log("Home Screen Data =====>",response.result.data)
+    let {result} = await makeGetApiCall(url,token)
+    setPendingData(result.data)
+    console.log("Home Screen Data =====>",result)
   }
 
 

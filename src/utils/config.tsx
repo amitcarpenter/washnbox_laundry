@@ -1,4 +1,4 @@
-export const BASE_URL = "http://147.93.31.231:4000/laundry/"
+export const BASE_URL = "https://washnbox.com:4000/laundry/"
 
 export const PROVIDER_URLS = {
     LOGIN_WITH_NUMBER:"login-with-mobile",

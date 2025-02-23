@@ -118,7 +118,7 @@ export const IMAGES = {
     map:require("../assets/images/map.png"),
     my_laundry:require("../assets/images/My_Laundry.png"),
     success:require("../assets/images/success.png"),
-    vendor:require("../assets/images/vendor.png"),
+    vendor:require("../assets/images/vendor.jpeg"),
 }
 
 export const ICONS = {
