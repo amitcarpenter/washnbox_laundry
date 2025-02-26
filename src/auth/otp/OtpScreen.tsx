@@ -7,17 +7,18 @@ import Button from '../../component/button/Button';
 import Container from '../../component/view/Container';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { makePostApiCall } from '../../utils/helper';
+import { makePostApiCall, showAlert } from '../../utils/helper';
 import { PROVIDER_URLS } from '../../utils/config';
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import useCountdownTimer from '../../hooks/useCountdownTimer';
 const OtpScreen = () => {
 
   const navigation = useNavigation()
   const [value, setValue] = useState("")
   const loginData = useSelector(state=>state.data.loginData)
-  console.log("otp screen =>",loginData.result.data)
+  const countDown = useCountdownTimer(59)
 
-  const otpValue = loginData.result.data || "";  
+  const [otpValue,setOtpValue] = useState(loginData.result.data || "");  
   const otpRef = useRef(null);
 
   const renderOtpInput = () =>{
@@ -55,22 +56,23 @@ const OtpScreen = () => {
       "otp" : loginData.result.data
     }
     let url = PROVIDER_URLS.LOGIN_WITH_OTP
-    let response = await makePostApiCall(url,data)
-    await checkResponse(response)
+    let {result} = await makePostApiCall(url,data)
+    // console.log("response ===>",result)
+    await checkResponse(result)
   }
 
   const checkResponse = async (response:any) => {
-        if(response?.success){
-          await storeToken(response)
-          navigation.navigate("ProfileScreen")
-        }else{
-          Alert.alert("Failed","Something went wrong",[
-            {
-              text:"OK",
-              onPress:()=>{}
-            }
-          ])
+    if(response?.success){
+      await storeToken(response)
+      navigation.navigate("ProfileScreen")
+    }else{
+      Alert.alert("Failed",response?.message,[
+        {
+          text:"OK",
+          onPress:()=>{}
         }
+      ])
+    }
   }
 
   const storeToken = async (response:any) =>{
@@ -78,16 +80,32 @@ const OtpScreen = () => {
     await AsyncStorage.setItem("loginData",loginData)
   }
 
+  const resendOtp = async () =>{
+    let data = { "mobile_number": loginData.formattedValue };
+    // console.log("resend ===>",data)
+    let url = PROVIDER_URLS.LOGIN_WITH_NUMBER;
+    let {result} = await makePostApiCall(url, data);
+    await checkResendOtpResponse(result);
+  }
+
+  const checkResendOtpResponse = async (response:any) =>{
+    console.log("resend otp ====>",response)
+    if(response?.success){
+      setOtpValue(response?.data)
+      showAlert("success",response)
+    }
+  }
+
   return (
         <Container>
           <Header title='OTP' />
           <View style={styles.content}>
-            <Text style={styles.timerText}>00:42</Text>
+            <Text style={styles.timerText}>{countDown}</Text>
             <Text style={styles.verificationText}>Type the verification code {"\n"} we’ve sent you</Text>
 
             {renderOtpInput()}
-            <Text style={styles.phoneNumber}>{loginData.number} <Text style={styles.editText}> Edit</Text></Text>
-            <Text style={styles.resendText}>Send again</Text>
+            <Text style={styles.phoneNumber}>{loginData.number} <Text onPress={()=>navigation.goBack()} style={styles.editText}> Edit</Text></Text>
+            <Text style={styles.resendText} onPress={resendOtp}>Send again</Text>
 
             <Text style={{position:"absolute",bottom:160}}>{otpValue || "try again"}</Text>
             <Button 

@@ -168,3 +168,19 @@ export const renderAlertBox = (data:any)=>{
         onPress:()=>{}
     }])
 }
+
+
+export const showAlert = (status:string,data:any)=>{
+    return (
+        Alert.alert(status,data?.message,[
+            {
+                text:"cancel",
+                onPress:()=>{}
+            },
+            {
+                text:"ok",
+                onPress:()=>{}
+            }
+        ])
+    )
+}
