@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Container from '../../component/view/Container'
 import Header from '../../component/header/Header'
@@ -9,6 +9,7 @@ import { getUserToken, makeGetApiCall } from '../../utils/helper'
 import { PROVIDER_URLS } from '../../utils/config'
 import { useDispatch } from 'react-redux'
 import { addSelectedOrderDetails, addSelectedUserData } from '../../redux/dataSlice'
+import ActivityLoader from '../../component/loader/ActivityLoader'
 
 const OrderScreen = () => {
 
@@ -16,6 +17,7 @@ const OrderScreen = () => {
   const [token, setToken] = useState('')
   const [orderList, setOrderList] = useState([])
   const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(true)
 
 
   useEffect(()=>{
@@ -33,6 +35,7 @@ const OrderScreen = () => {
     let url = PROVIDER_URLS.GET_PROVIDER_ACTIVE_ORDERS
     let response = await makeGetApiCall(url,token)
     setOrderList(response.result.data)
+    setIsLoading(false)
     // console.log("response =",response.result)
   }
    
@@ -62,7 +65,6 @@ const OrderScreen = () => {
   }
 
   const renderOrderItem = ({item}) =>{
-    console.log("item ====>",item)
     return(
       <TouchableOpacity onPress={()=>navigateToOrderDetails(item)} style={styles.orderItemContainer}>
         <View style={styles.orderItemHeader}>
@@ -94,11 +96,23 @@ const OrderScreen = () => {
         <Text style={styles.activeOrdersText}>6 Active Orders</Text>
       </View>
 
-      <FlatList 
-        data={orderList} 
-        scrollEnabled={true} 
-        renderItem={(item)=>renderOrderItem(item)} 
-      />
+
+      {
+        isLoading ?
+          (
+            <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+              <ActivityIndicator size={"large"} color={COLORS.primary} />
+            </View>
+          )
+        :
+        <>
+         <FlatList 
+            data={orderList} 
+            scrollEnabled={true} 
+            renderItem={(item)=>renderOrderItem(item)} 
+          />
+        </>
+      }
 
     </Container>
   )

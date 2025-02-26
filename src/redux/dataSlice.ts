@@ -8,26 +8,29 @@ const dataSlice = createSlice({
         error: null,
         loginData: {},
         selectedUser: {},
+        orders:[],
         selectedOrderDetails: {},
         vendorDetails: {},
         selectedItems: [],
     },
     reducers: {
-        // fetchDataRequest: (state) => {
-        //     state.loading = true;
-        // },
-        // fetchDataSuccess: (state, action) => {
-        //     state.loading = false;
-        //     state.data = action.payload;
-        // },
-        // fetchDataFailure: (state, action) => {
-        //     state.loading = false;
-        //     state.error = action.payload;
-        // },
+        fetchOrdersRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchOrdersSuccess: (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+        },
+        fetchOrdersFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        },
         addLoginData: (state, action) => {
             state.loginData = action.payload;
         },
         addSelectedUserData: (state, action) => {
+            console.log("Selected user ===>",action.payload)
             state.selectedUser = action.payload;
         },
         addSelectedOrderDetails: (state, action) => {
@@ -74,7 +77,8 @@ export const {
     addClothType, 
     removeClothType, 
     updateService, 
-    updateQuantity
+    updateQuantity,
+    fetchOrdersRequest, fetchOrdersSuccess, fetchOrdersFailure 
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

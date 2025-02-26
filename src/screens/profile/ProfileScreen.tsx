@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, FlatList, TextInput, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, FlatList, TextInput, Dimensions, ActivityIndicator } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Container from '../../component/view/Container';
 import Header from '../../component/header/Header';
@@ -15,7 +15,7 @@ import CheckBox from 'react-native-check-box'
 import OutLinedButton from '../../component/button/OutLinedButton';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { ProfileDataType, ServiceItems, Services } from '../../utils/type';
-import { checkIsDataValid, getLocationCoordinates, getUserToken, makeGetApiCall, makePostApiCall, renderAlertBox } from '../../utils/helper';
+import { checkIsDataValid, getLocationCoordinates, getUserToken, makeGetApiCall, makePostApiCall, renderAlertBox, showAlert } from '../../utils/helper';
 import { NAVIGATE_TO, PROVIDER_URLS } from '../../utils/config';
 import { getAddressFromCoordinates } from '../../utils/helper';
 import { useSelector } from 'react-redux';
@@ -43,9 +43,10 @@ const ProfileScreen = () => {
   const [profile, setProfile] = useState({})
   const [clothsTypes, setClothsType] = useState([])
   const [token, setToken] = useState("")
-  const number = useSelector(state=>state.data.loginData.number)
   const [coordinates,setCoordinates] = useState({})
   const [profileData, setProfileData] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [isEditable,setIsEditable] = useState(false)
 
   useEffect(()=>{
     getToken()
@@ -67,13 +68,25 @@ const ProfileScreen = () => {
     let url  = PROVIDER_URLS.GET_PROFILE
     let { result } = await makeGetApiCall(url,token)
     const data = {
-      name:result?.data?.provider.name || "Not Available",
-      email:result?.data?.provider.email || "Not Available",
-      full_number:result?.data?.provider.mobile_number  || "Not Available",
-      service_details:result?.data?.services_details || [],
+      name:result?.data?.provider?.name || "Not Available",
+      email:result?.data?.provider?.email || "Not Available",
+      full_number:result?.data?.provider?.mobile_number  || "Not Available",
+      service_details:result?.data?.services?.service_details || [],
       address:result?.data?.address?.address || "Not Available"
     }
+    // console.log(data)
     setProfileData(data)
+    let ids = []
+    data?.service_details?.forEach( item =>{
+      ids.push(item?.id)
+    })
+    setSelectedClothId(ids)
+    setSelectedClothTypeItems(data?.service_details)
+    setIsLoading(false)
+  }
+
+  const startEditing = () =>{
+    setIsEditable(!isEditable)
   }
 
   const fetchClothsTypesForBottomSheet  = async () =>{
@@ -138,14 +151,15 @@ const ProfileScreen = () => {
   
 
   const renderSelectedClothsTypeItems = () =>{
+
     return(
       <View>
-      {profileData?.service_details?.map((item)=>{
+      {selectedClothTypeItem?.map((item)=>{
         return(
           <View style={styles.card} key={item?.id}>
             <View style={styles.headerContainer}>
               <Text style={styles.itemTitle}>{item.type}</Text>
-              <TouchableOpacity onPress={()=>onSelectClothType(item)} >
+              <TouchableOpacity disabled={!isEditable} onPress={()=>onSelectClothType(item)} >
                 <Image source={ICONS.delete} style={styles.deleteIcon} />
               </TouchableOpacity>
             </View>
@@ -154,7 +168,9 @@ const ProfileScreen = () => {
                 <View key={index} style={styles.serviceBox}>
                   <Text style={styles.serviceText}>{service.name}</Text>
                   <TextInput 
-                    placeholder='$ 0' 
+                    placeholder='$ 0'
+                    editable={isEditable}
+                    value={`${service?.price}`}
                     placeholderTextColor={COLORS.primary}
                     keyboardType="numeric"
                     style={[styles.input, { color: COLORS.primary }]}
@@ -168,8 +184,8 @@ const ProfileScreen = () => {
       })}
   
       <OutLinedButton 
-        // onPress={openBottomSheet}
-        disabled={false}
+        onPress={openBottomSheet}
+        disabled={!isEditable}
         title='Add more item' 
         style={{
           position:"relative"
@@ -208,11 +224,11 @@ const ProfileScreen = () => {
     return (
       <View>
         <Input
-          editable={false}
-          value={profileData?.name}
+          editable={isEditable}
+          value={isEditable ? businessName : profileData?.name}
           keyboardType="email-address" 
           label='Business Name' 
-          placeholder="Enter your business name" 
+          placeholder={"Enter Business Name"}
           labelStyle={styles.labelStyle}
           containerStyle={styles.inputContainer}
           onChangeText={text=>(
@@ -238,8 +254,8 @@ const ProfileScreen = () => {
           /> */}
 
         <Input 
-          editable={false}
-          value={profileData?.email}
+          editable={isEditable}
+          value={isEditable?email:profileData?.email}
           keyboardType="email-address" 
           label='Email' 
           placeholder="Enter your email" 
@@ -259,7 +275,8 @@ const ProfileScreen = () => {
             disableArrowIcon
             disabled
             placeholder={localNumber}
-            value={localNumber}
+            // placeholder={localNumber}
+            // value={localNumber}
             containerStyle={styles.phoneInputStyle}
             textInputStyle={{
               padding: 0,
@@ -313,7 +330,7 @@ const ProfileScreen = () => {
   const onSelectClothType = (item:any) =>{
     if(selectedClothId.includes(item.id)){
       let filteredSelectedIds  = selectedClothId.filter(id=>id!==item.id)
-      let filteredSlectedClothTypeItems = selectedClothTypeItem.filter(selected=>selected.id!= item.id)
+      let filteredSlectedClothTypeItems = selectedClothTypeItem?.filter(selected=>selected.id!= item.id)
       setSelectedClothId([...filteredSelectedIds])
       setSelectedClothTypeItems([...filteredSlectedClothTypeItems])
     }else{
@@ -374,53 +391,106 @@ const ProfileScreen = () => {
     refRBSheet?.current?.open()
   }
   
-  // const sumitDetails = async () => {
-  //   let formData = new FormData()
-  //   let data:ProfileDataType = {
-  //     shop_name:businessName,
-  //     address:address,
-  //     email:email,
-  //     phone:phone,
-  //     upi_id:upiId,
-  //     services:selectedClothTypeItem
-  //   }
+  const sumitDetails = async () => {
+    let formData = new FormData()
+    let data:ProfileDataType = {
+      shop_name:businessName,
+      address:address || profileData?.address,
+      email:email,
+      phone:phone,
+      // upi_id:upiId,
+      file:imageUri,
+      services:selectedClothTypeItem
+    }
 
-  //   let status = await checkIsDataValid(data)
+    let status = await checkIsDataValid(data)
 
-  //   if(!status.isDeatilsValid){
-  //     renderAlertBox(status)
-  //   }else{
-  //     let data = {
-  //       name:businessName,
-  //       shop_name:businessName,
-  //       laundry_address:address,
-  //       email:email,
-  //       service_details:selectedClothTypeItem,
-  //       latitude:coordinates.lattitude,
-  //       longitude:coordinates.longitude,
-  //       file:profile,
-  //       // upiId:upiId 
-  //     }
-  //     // formData.append('shop_name',businessName)
-  //     // formData.append('address',address)
-  //     // formData.append("email",email)
-  //     // formData.append("phone",phone)
-  //     // formData.append("services",JSON.stringify(selectedClothTypeItem))
-  //     // formData.append("profile",profile)
-  //     let response =  await makePostApiCall(PROVIDER_URLS.EDIT_LAUNDRY_PROFILE,data,true,token)
-  //     if(response.success){
-  //       navigation.navigate(NAVIGATE_TO.TAB_NAVIGATION as never)
-  //     }
-  //   }
-  // }
+    if(!status.isDeatilsValid){
+      renderAlertBox(status)
+    }else{
+      let data = {
+        name:businessName,
+        shop_name:businessName,
+        laundry_address:address,
+        email:email,
+        service_details:selectedClothTypeItem,
+        latitude:coordinates.lattitude,
+        longitude:coordinates.longitude,
+        file:profile,
+        // upiId:upiId 
+      }
+      // formData.append('shop_name',businessName)
+      // formData.append('address',address)
+      // formData.append("email",email)
+      // formData.append("phone",phone)
+      // formData.append("services",JSON.stringify(selectedClothTypeItem))
+      // formData.append("profile",profile)
+      let {result} =  await makePostApiCall(PROVIDER_URLS.EDIT_LAUNDRY_PROFILE,data,true,token)
+      // console.log("response ===>",result)
+      if(result?.success){
+        setIsEditable(false)
+        let data = {
+          message:"Profile updated successfully"
+        }
+        showAlert("Success",data)
+        // navigation.navigate(NAVIGATE_TO.TAB_NAVIGATION as never)
+      }
+    }
+  }
+
+  const renderHeader = () =>{
+    return(
+      <Header 
+        title='Profile' 
+        renderComponent={
+          isEditable ? (
+            <Text 
+              onPress={startEditing}
+              style={styles.cancelTextStyle}
+            >
+              Cancel
+            </Text>
+          ) : (
+            <Text 
+              onPress={startEditing}
+              style={styles.editTextStyle}
+            >
+              Edit
+            </Text>
+          )
+        } 
+      />
+    )
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContainer}>
-      <Header title='Profile' />
-      {renderProfileImage()}
-      {renderInputFields()}
-      {/* <Button onPress={sumitDetails} title='Update' style={styles.updateButton} /> */}
-      {renderBottomSheet()}
+     
+      {/* Header */}
+      {renderHeader()}
+
+      {
+        isLoading ? (
+          <View style={{minHeight:"80%",justifyContent:"center",alignItems:"center"}}>
+            <ActivityIndicator size={"large"} color={COLORS.primary} />
+          </View>
+        ) : (
+          <>
+            {renderProfileImage()}
+
+            {renderInputFields()}
+              <Button
+                disabled={!isEditable} 
+                onPress={sumitDetails} 
+                title='Update'
+                titleStyle={isEditable?{}:{color:COLORS.black}}
+                style={isEditable?styles.updateButton:styles.disabledButton} 
+              />
+            {renderBottomSheet()}
+          </>
+        )
+      }
+      
     </ScrollView>
   );
 };
@@ -430,6 +500,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     backgroundColor:COLORS.white
+  },
+  cancelTextStyle:{
+    position:"absolute",
+    right:0,
+    color:"red",
+    fontSize:16,
+    fontWeight:"700"
+  },
+  editTextStyle:{
+    position:"absolute",
+    right:0,
+    color:COLORS.primary,
+    fontSize:16,
+    fontWeight:"700"
+  },
+  disabledButton:{
+    position: "relative",
+    marginTop:20,
+    backgroundColor:COLORS.borderColor
   },
   clothsTypeItemStyle:{
     width:"96%",

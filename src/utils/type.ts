@@ -18,6 +18,7 @@ export type ProfileDataType = {
     address:string;
     email:string;
     phone:string;
-    services:Services[]
+    services:Services[],
+    file:string
 }
 

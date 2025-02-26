@@ -6,20 +6,22 @@ import { OtpInput } from "react-native-otp-entry";
 import Button from '../../component/button/Button';
 import Container from '../../component/view/Container';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makePostApiCall, showAlert } from '../../utils/helper';
 import { PROVIDER_URLS } from '../../utils/config';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import useCountdownTimer from '../../hooks/useCountdownTimer';
+import { addLoginData } from '../../redux/dataSlice';
 const OtpScreen = () => {
 
   const navigation = useNavigation()
   const [value, setValue] = useState("")
   const loginData = useSelector(state=>state.data.loginData)
   const countDown = useCountdownTimer(59)
-
   const [otpValue,setOtpValue] = useState(loginData.result.data || "");  
   const otpRef = useRef(null);
+  const dispatch = useDispatch()
+
 
   const renderOtpInput = () =>{
     return(
@@ -53,11 +55,10 @@ const OtpScreen = () => {
   const onSubmitinOtp = async () => { 
     let data = {
       "mobile_number" : loginData.formattedValue,
-      "otp" : loginData.result.data
+      "otp" : otpValue
     }
     let url = PROVIDER_URLS.LOGIN_WITH_OTP
     let {result} = await makePostApiCall(url,data)
-    // console.log("response ===>",result)
     await checkResponse(result)
   }
 
@@ -76,7 +77,9 @@ const OtpScreen = () => {
   }
 
   const storeToken = async (response:any) =>{
+    // console.log("Store token ===>",response)
     let loginData = JSON.stringify(response)
+    await AsyncStorage.setItem("isLogined","1")
     await AsyncStorage.setItem("loginData",loginData)
   }
 
@@ -93,6 +96,8 @@ const OtpScreen = () => {
     if(response?.success){
       setOtpValue(response?.data)
       showAlert("success",response)
+    }else{
+      showAlert("success",response)
     }
   }
 
@@ -104,7 +109,7 @@ const OtpScreen = () => {
             <Text style={styles.verificationText}>Type the verification code {"\n"} we’ve sent you</Text>
 
             {renderOtpInput()}
-            <Text style={styles.phoneNumber}>{loginData.number} <Text onPress={()=>navigation.goBack()} style={styles.editText}> Edit</Text></Text>
+            <Text style={styles.phoneNumber}>{loginData.number} <Text onPress={()=>navigation.navigate("RegisterPhoneScreen")} style={styles.editText}> Edit</Text></Text>
             <Text style={styles.resendText} onPress={resendOtp}>Send again</Text>
 
             <Text style={{position:"absolute",bottom:160}}>{otpValue || "try again"}</Text>

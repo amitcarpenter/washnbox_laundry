@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Container from '../../component/view/Container'
 import Header from '../../component/header/Header'
@@ -15,6 +15,7 @@ const NotificationScreen = () => {
     const [notificationList, setNotificationList] = useState([])
     const [token, setToken] = useState("")
     const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(()=>{
         getToken()
@@ -30,6 +31,7 @@ const NotificationScreen = () => {
         let url = PROVIDER_URLS.GET_PROVIDER_NOTIFICATION
         let response = await makeGetApiCall(url,token)
         setNotificationList(response.result.data)
+        setIsLoading(false)
         // console.log("Notification ====>",response.result.data)
     }
 
@@ -88,11 +90,21 @@ const NotificationScreen = () => {
 
         <Header title='Notifications' />
 
-        <FlatList
-            data={notificationList}
-            contentContainerStyle={styles.flatListContainer}
-            renderItem={({item})=>renderNotificationsItem(item)}
-        />
+        {
+            isLoading ? (
+                <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+                    <ActivityIndicator size={"large"} color={COLORS.primary} />
+                </View>
+
+            ) : (
+                
+                <FlatList
+                    data={notificationList}
+                    contentContainerStyle={styles.flatListContainer}
+                    renderItem={({item})=>renderNotificationsItem(item)}
+                />
+            )
+        }
     </Container>
   )
 }

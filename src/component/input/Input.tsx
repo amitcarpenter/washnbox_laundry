@@ -27,6 +27,7 @@ const Input = (props:Props) => {
       <TextInput 
         editable={props.editable}
         value={props.value}
+        placeholderTextColor={"gray"}
         placeholder={props.placeholder || "+91"} 
         style={[
             styles.inputFieldStyle,

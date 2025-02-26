@@ -54,10 +54,18 @@ const EditScreen = () => {
   useEffect(()=>{
     getLocationPermission()
     fetchCoordinates()
-  },[])
+  },[token])
+
+
+  useEffect(()=>{
+    if(coordinates){
+      fetchAddressFromCoordinates(coordinates)
+    }
+  },[coordinates])
 
   const getToken = async () =>{
     let token = await getUserToken()
+    // console.log("token ====>",token)
     setToken(token)
   }
 
@@ -182,7 +190,6 @@ const EditScreen = () => {
     setSelectedClothTypeItems(updatedItems);
   };
   
-
   const renderSelectedClothsTypeItems = () =>{
     return(
       <View>
@@ -317,8 +324,7 @@ const EditScreen = () => {
     try {
       const coordinates = await getLocationCoordinates();
       setCoordinates(coordinates)
-      if(coordinates) fetchAddressFromCoordinates(coordinates)
-      // console.log("coordinates =>", coordinates);
+      console.log("coordinates =>", coordinates);
     } catch (error) {
       console.error("Failed to fetch coordinates:", error)
     }
@@ -401,6 +407,7 @@ const EditScreen = () => {
       email:email,
       phone:phone,
       upi_id:upiId,
+      file:imageUri,
       services:selectedClothTypeItem
     }
 

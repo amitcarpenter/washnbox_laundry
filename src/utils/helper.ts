@@ -52,6 +52,7 @@ export const makeGetApiCall = async (url:string,token:string) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
         }
+        console.log("URL:", url, "Token:", token);
         const response = await axios.get(`${BASE_URL + url}`,{headers})
         console.log(`
             URL: ${url} \n
@@ -79,8 +80,8 @@ export const makeGetApiCall = async (url:string,token:string) => {
 
 export const getUserToken = async () =>{
     try {
-        let token:string = await AsyncStorage.getItem("loginData").then(resp=>JSON.parse(resp).result.data)
-        return token;
+        let token:string = await AsyncStorage.getItem("loginData").then(resp=>JSON.parse(resp))
+        return token?.data;
     } catch (error) {
         console.log(`
             TOKEN:
@@ -114,24 +115,28 @@ export const getAddressFromCoordinates = async (lat:string, lng:string) => {
     }
 };
 
-export const checkIsDataValid = async (data:ProfileDataType) =>{
-    let {
-        shop_name,
-        email,
-        phone,
-        services,
-        upi_id,
-        address
-    } = data
+export const checkIsDataValid = async (data: ProfileDataType) => {
+    let { shop_name, email, phone, services, upi_id, address, file } = data;
+    
+    if (!file) return { isDeatilsValid: false, error: 'Please select a business image' };
 
-    if (!shop_name) return { isDeatilsValid: false, error: 'Shop name is required' };
+    if (!shop_name) return { isDeatilsValid: false, error: 'Business name is required' };
     const formattedName = shop_name.trim().replace(/\s+/g, ' ');
     if (formattedName.length < 2) {
-      return { isDeatilsValid: false, error: 'Shop name must be at least 2 characters' };
+      return { isDeatilsValid: false, error: 'Business name must be at least 2 characters' };
     }
+  
+    if (!address) return { isDeatilsValid: false, error: 'Please select an address. It is required' };
+  
+    if (!email) return { isDeatilsValid: false, error: 'Email is required' };
+  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { isDeatilsValid: false, error: 'Invalid email format' };
+    }
+  
     return { isDeatilsValid: true };
-}
-
+  };
 export const getLocationCoordinates = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(

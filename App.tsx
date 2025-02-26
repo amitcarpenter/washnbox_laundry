@@ -17,9 +17,15 @@ const App = () => {
   const checkBoardingScreenVisited = async () => {
     try {
       const code = await AsyncStorage.getItem("isBordingScreenVisited");
-      if (code === "1") {
+      const isLogined = await AsyncStorage.getItem("isLogined");
+      if (code === "1" && isLogined ==="1") {
+        console.log("=======> Already logged in <=========")
         setScreenName(NAVIGATE_TO.TAB_NAVIGATION);
-      } else {
+      } else if(code ==="1") {
+        console.log("=======> Bording Screen Visited <=========")
+        setScreenName(NAVIGATE_TO.REGISTER_PHONE_SCREEN)
+      }else{
+        console.log("=======> First Interaction With Application <=========")
         setScreenName(NAVIGATE_TO.ONBOARDIN_SCREEN);
       }
     } catch (error) {

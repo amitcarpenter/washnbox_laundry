@@ -1,3 +1,5 @@
+import RegisterPhoneScreen from "../auth/phone/RegisterPhoneScreen"
+
 export const BASE_URL = "https://washnbox.com:4000/laundry/"
 
 export const PROVIDER_URLS = {
@@ -18,7 +20,8 @@ export const NAVIGATE_TO = {
     ORDER_SCREEN:"OrderScreen",
     ORDER_DETAILS_SCREEN:"OrderDetails",
     TAB_NAVIGATION :"TabNavigation",
-    ONBOARDIN_SCREEN:"OnbordingScreen"
+    ONBOARDIN_SCREEN:"OnbordingScreen",
+    REGISTER_PHONE_SCREEN:"RegisterPhoneScreen"
 }
 
 export const GOOGLE_KEY = "AIzaSyB0V1g5YyGB_NE1Lw1QitZZGECA5-1Xnng"

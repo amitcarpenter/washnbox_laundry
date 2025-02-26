@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform, Alert, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, FlatList, Dimensions, Platform, Alert, BackHandler, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Container from '../../component/view/Container';
 import { COLORS, HomeScreenData, ICONS, IMAGES, USERS } from '../../constant/constant';
@@ -7,12 +7,13 @@ import Modal from "react-native-modal"
 import Header from '../../component/header/Header';
 import CheckBox from 'react-native-check-box';
 import Dropdown from "react-native-dropdown-picker"
-import { PROVIDER_URLS } from '../../utils/config';
+import { BASE_URL, PROVIDER_URLS } from '../../utils/config';
 import { getUserToken, makeGetApiCall } from '../../utils/helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './styles';
-import { addSelectedOrderDetails, addSelectedUserData } from '../../redux/dataSlice';
-import { useDispatch } from 'react-redux';
+import { addSelectedOrderDetails, addSelectedUserData, fetchOrdersRequest } from '../../redux/dataSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 const deviceWidth = Dimensions.get("window").width;
 const deviceHeight = Dimensions.get("window").height
@@ -40,6 +41,8 @@ const HomeScreen = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [pendingData,setPendingData] = useState([])
   const dispatch = useDispatch()
+  const [originalData, setOriginalData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true)
   
   useEffect(() => {
     const backAction = () => {
@@ -52,23 +55,60 @@ const HomeScreen = () => {
     return () => backHandler.remove()
   }, []);
 
-  useEffect(()=>{
-    getToken()
-    fetchAllOrders()
-  },[token])
+  useEffect(() => {
+    getToken();
+  }, [token]);
 
-  const getToken = async () =>{
-    let token = await getUserToken()
-    setToken(token)
+  // const { orders, loading, error } = useSelector((state) => state);
+
+  // useEffect(() => {
+  //   dispatch(fetchOrdersRequest());
+  // }, []);
+  
+  useEffect(() => {
+    if (token) {
+      fetchAllOrders();
+    }
+  }, [token]);
+  
+  const getToken = async () => {
+    let userToken = await getUserToken();
+    setToken(userToken);
+  };
+  
+  const fetchAllOrders = async () => {
+    let url = PROVIDER_URLS.GET_PROVIDER_ACTIVE_ORDERS
+    let headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+    const response = await axios.get(`${BASE_URL + url}`,{headers})
+    setPendingData(response?.data?.data);
+    setIsLoading(false)
+  };
+
+  // const searchOrders = async (text: string) => {
+  //   let searchedText = text.toLowerCase().trim();
+  
+  //   if (searchedText.length === 0) {
+  //     setPendingData(originalData);
+  //     return;
+  //   }
+
+  //   let filteredOrders = originalData.filter((item) =>
+  //     item?.user?.name?.toLowerCase()?.includes(searchedText)
+  //   );
+  
+  //   setPendingData(filteredOrders);
+  // };
+
+  const closeFilterModal = () =>{
+    setIsFilterModalOpen(false)
   }
 
-  const fetchAllOrders = async () =>{
-    let url = PROVIDER_URLS.GET_PROVIDER_ORDERS
-    let {result} = await makeGetApiCall(url,token)
-    setPendingData(result.data)
-    console.log("Home Screen Data =====>",result)
+  const openFilterModal = () =>{
+    setIsFilterModalOpen(true)
   }
-
 
   // <--------- Below this we have all the UI stuff ------->
 
@@ -78,19 +118,6 @@ const HomeScreen = () => {
         <Image source={ICONS.search} style={styles.searchIcon} />
         <TextInput placeholder='Search' style={styles.searchInput} />
       </View>
-    </View>
-  );
-
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      <Image source={IMAGES.logo} style={styles.logo} />
-      <Image source={IMAGES.my_laundry} style={styles.laundryLogo} resizeMode='contain' />
-      <TouchableOpacity onPress={()=>navigation.navigate("NotificationScreen")}>
-        <Image source={ICONS.notification_bell} style={styles.notificationIcon} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
-        <Image source={ICONS.filter} style={styles.filterIcon} />
-      </TouchableOpacity>
     </View>
   );
 
@@ -151,23 +178,40 @@ const HomeScreen = () => {
 
   const renderOrdersList = () =>{
     return(
-      <FlatList
-          data={pendingData}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderOrderItem}
-          keyExtractor={(item, index) => index.toString()}
-      />
+
+      <>
+      {
+        isLoading ? (
+          <View style={{minHeight:"80%",justifyContent:"center",alignItems:"center"}}>
+            <ActivityIndicator size={"large"} color={COLORS.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={pendingData}
+            // contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderOrderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )
+      }
+      
+      </>
     )
   }
 
-  const closeFilterModal = () =>{
-    setIsFilterModalOpen(false)
-  }
-
-  const openFilterModal = () =>{
-    setIsFilterModalOpen(true)
-  }
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <Image source={IMAGES.logo} style={styles.logo} />
+      <Image source={IMAGES.my_laundry} style={styles.laundryLogo} resizeMode='contain' />
+      <TouchableOpacity onPress={()=>navigation.navigate("NotificationScreen")}>
+        <Image source={ICONS.notification_bell} style={styles.notificationIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
+        <Image source={ICONS.filter} style={styles.filterIcon} />
+      </TouchableOpacity>
+    </View>
+  );
 
   const renderFilterModal = () => {
     return(
@@ -291,10 +335,9 @@ const HomeScreen = () => {
   }
 
   return (
-    <Container containerStyle={styles.containerStyle}>
+    <Container>
       <View style={styles.topSection}>
         {renderHeader()}
-
         {renderSearchField()}
       </View>
 

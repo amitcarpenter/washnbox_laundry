@@ -7,6 +7,8 @@ import Button from '../../component/button/Button'
 import DropDownPicker from 'react-native-dropdown-picker'
 import { styles } from './styles'
 import { useSelector } from 'react-redux'
+import { PROVIDER_URLS } from '../../utils/config'
+import { makeGetApiCall } from '../../utils/helper'
 
 const OrderDetails = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -20,6 +22,8 @@ const OrderDetails = () => {
 
   const userData = useSelector(state => state.data.selectedUser);
   const orderDetails = useSelector(state => state.data.selectedOrderDetails);
+
+  // console.log("Order Details ====>",orderDetails)
   const [orderItems, setOrderItems] = useState(orderDetails?.item_details || []);
   const [status, setStatus] = useState("")
   const [statusCode, setStatusCode] = useState(0)
@@ -135,13 +139,13 @@ const OrderDetails = () => {
             dropDownContainerStyle={styles.dropDownContainerStyle}
             style={styles.dropDownContainerStyle}
             textStyle={styles.dropDownTextStyle}
-            placeholder="Iron  $3/unit"
+            placeholder={`${item?.service_type}  $ ${item?.price_per_unit}/unit`}
           />
         </View>
 
         <View style={{ flex: 0.2 }}>
           <View style={styles.priceAndQuantityContainer}>
-            <Text style={styles.priceText}>$ {item.quantity*2}</Text>
+            <Text style={styles.priceText}>$ {item?.quantity*item?.price_per_unit}</Text>
           </View>
           <View style={styles.quantityContainer}>
             <View style={styles.quantityContainer2}>
@@ -157,33 +161,41 @@ const OrderDetails = () => {
     );
   };
 
+  const renderUserDetails = () =>{
+    // console.log(`renderUserDetails ${new Date(orderDetails?.updated_at).toLocaleString()}`)
+    let date = new Date(orderDetails?.updated_at).toLocaleString();
+    return (
+      <View style={styles.orderItemContainer}>
+        <View style={styles.imageContainer}>
+          <Image source={USERS.user1} style={styles.orderImage} />
+        </View>
+        <View style={styles.orderDetails}>
+          <Text style={styles.orderName}>{userData?.name}</Text>
+          <Text style={styles.orderDateTime}>{date}</Text>
+          <View style={styles.servicesContainer}>
+            {orderDetails?.item_details?.map((service:any, index:number) => (
+              <Text key={index} style={styles.serviceText} ellipsizeMode='tail'>
+                {service?.item_name}
+              </Text>
+            ))}
+          </View>
+        </View>
+        <View style={styles.priceContainer}>
+          <View style={styles.priceRow}>
+            <Image source={ICONS.rupees} style={styles.rupeesIcon} />
+            <Text style={styles.orderPrice}>{orderDetails?.total_price}</Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
   return (
     <View>
       <Container containerStyle={{ paddingBottom: 0 }}>
         <Header title='Order Details' isFilter={false} />
 
-        <View style={styles.orderItemContainer}>
-          <View style={styles.imageContainer}>
-            <Image source={USERS.user1} style={styles.orderImage} />
-          </View>
-          <View style={styles.orderDetails}>
-            <Text style={styles.orderName}>{userData?.name}</Text>
-            <Text style={styles.orderDateTime}>{orderDetails?.updated_at}</Text>
-            <View style={styles.servicesContainer}>
-              {orderDetails?.item_details?.map((service:any, index:number) => (
-                <Text key={index} style={styles.serviceText} ellipsizeMode='tail'>
-                  {service?.item_name}
-                </Text>
-              ))}
-            </View>
-          </View>
-          <View style={styles.priceContainer}>
-            <View style={styles.priceRow}>
-              <Image source={ICONS.rupees} style={styles.rupeesIcon} />
-              <Text style={styles.orderPrice}>{orderDetails?.total_price}</Text>
-            </View>
-          </View>
-        </View>
+        {renderUserDetails()}
 
         <View style={{ width: "100%", height: "80%" }}>
           <View style={styles.lockboxAndCallIconContainer}>

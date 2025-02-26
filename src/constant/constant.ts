@@ -254,7 +254,7 @@ export const HomeScreenData = [
 
 export const ClothsTypes = [
     {
-        id:0,
+        id:"0",
         type:"Shirt",
         services:[
             {
@@ -272,7 +272,7 @@ export const ClothsTypes = [
         ]  
     },
     {
-        id:1,
+        id:"1",
         type:"T-Shirt",
         services:[
             {
@@ -290,7 +290,7 @@ export const ClothsTypes = [
         ]  
     },
     {
-        id:2,
+        id:"2",
         type:"Jeans",
         services:[
             {
@@ -308,7 +308,7 @@ export const ClothsTypes = [
         ]  
     },
     {
-        id:3,
+        id:"3",
         type:"Lower",
         services:[
             {

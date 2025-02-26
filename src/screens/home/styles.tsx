@@ -3,19 +3,17 @@ import { COLORS } from "../../constant/constant";
 
 export const styles = StyleSheet.create({
     containerStyle: {
-        flex:1,
       paddingBottom: 0,
     },
     topSection: {
-      height:"20%",
       justifyContent:"space-evenly"
     },
     bottomSection: {
-      height:"80%",
       paddingTop: 10,
     },
     headerContainer: {
-      flex:0.5,
+      // flex:0.15,
+      marginVertical:10,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -50,7 +48,8 @@ export const styles = StyleSheet.create({
     },
     searchContainer: {
       width: '100%',
-      height: '50%',
+      marginVertical:10,
+      // height: '50%',
       justifyContent: 'center',
     },
     searchField: {
@@ -71,6 +70,7 @@ export const styles = StyleSheet.create({
     },
     searchInput: {
       flex: 1,
+      // backgroundColor:"red"
     },
     pendingOrdersText: {
       fontSize: 16,
@@ -79,8 +79,9 @@ export const styles = StyleSheet.create({
       lineHeight: 19,
     },
     listContainer: {
+      // height:"10%",
       paddingTop: 20,
-      paddingBottom: 40,
+      // paddingBottom: "20%",
     //   backgroundColor:"red"
     },
     orderItemContainer: {
@@ -103,6 +104,7 @@ export const styles = StyleSheet.create({
     },
     orderDetails: {
       flex: 0.55,
+      // backgroundColor:"red",
       justifyContent: 'space-around',
       paddingLeft: 12,
       paddingVertical: 5,
