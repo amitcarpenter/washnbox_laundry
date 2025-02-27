@@ -1,8 +1,9 @@
 
 import axios from "axios"
-import { BASE_URL, GOOGLE_KEY } from "./config"
+import { BASE_URL } from "./config"
 import { ProfileDataType } from "./type";
-import { Alert } from "react-native";
+import { GOOGLE_API_KEY } from '@env';
+import { Alert, Linking } from "react-native";
 import Geolocation from "@react-native-community/geolocation";
 import { GeolocationError } from "@react-native-community/geolocation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -95,7 +96,8 @@ export const getUserToken = async () =>{
 }
 
 export const getAddressFromCoordinates = async (lat:string, lng:string) => {
-    const apiKey = GOOGLE_KEY;
+    const apiKey = GOOGLE_API_KEY
+    // console.log("GOOGLE_API_KEY",GOOGLE_API_KEY);
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
   
     try {
@@ -141,33 +143,45 @@ export const checkIsDataValid = async (data: ProfileDataType) => {
     return { isDeatilsValid: true };
   };
 export const getLocationCoordinates = () => {
-    return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        (success) => {
-        //   console.log("Location coords ===>", success.coords);
-          resolve(success.coords);
-        },
-        (error) => {
-          let errorMessage = "";
-          switch (error.code) {
-            case 1:
-              errorMessage = "Location permission denied.";
-              break;
-            case 2:
-              errorMessage = "Location position unavailable.";
-              break;
-            case 3:
-              errorMessage = "Location request timed out.";
-              break;
-            default:
-              errorMessage = "An unknown error occurred.";
-          }
-          Alert.alert("Location Error", errorMessage);
-          reject(error);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
-    });
+return new Promise((resolve, reject) => {
+    Geolocation.getCurrentPosition(
+    (success) => {
+        resolve(success.coords);
+    },
+    (error) => {
+        let errorMessage = "";
+        switch (error.code) {
+        case 1: // Permission denied
+            errorMessage = "Location permission denied. Please enable it in settings.";
+            Alert.alert(
+            "Location Permission",
+            "This app requires location access. Please enable it in settings.",
+            [
+                { text: "Cancel", style: "cancel" },
+                { 
+                text: "Open Settings", 
+                onPress: () => Linking.openSettings()
+                }
+            ]
+            );
+            break;
+        case 2:
+            errorMessage = "Location position unavailable.";
+            break;
+        case 3:
+            errorMessage = "Location request timed out.";
+            break;
+        default:
+            errorMessage = "An unknown error occurred.";
+        }
+        if (error.code !== 1) {
+        Alert.alert("Location Error", errorMessage);
+        }
+        reject(error);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+});
 };
 
 export const renderAlertBox = (data:any)=>{

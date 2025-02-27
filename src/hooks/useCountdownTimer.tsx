@@ -44,7 +44,7 @@ const useCountdownTimer = (initialSeconds: number = 59,resetKey:number) => {
       clearInterval(timer);
       subscription.remove(); // ✅ Correct way to remove the listener
     };
-  }, []);
+  }, [resetKey]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

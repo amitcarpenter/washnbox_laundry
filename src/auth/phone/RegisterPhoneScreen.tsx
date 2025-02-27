@@ -2,9 +2,10 @@ import {
   View, Text, StyleSheet, Image, 
   KeyboardAvoidingView, Platform, 
   TouchableWithoutFeedback, Keyboard, ScrollView, 
-  Alert
+  Alert,
+  BackHandler
 } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { COLORS, IMAGES } from '../../constant/constant';
 import Button from '../../component/button/Button';
 import Input from '../../component/input/Input';
@@ -25,6 +26,35 @@ const RegisterPhoneScreen = () => {
   const [formattedValue, setFormattedValue] = useState("");
   const [checkBox, setCheckBox] = useState(false)
   const dispatch = useDispatch()
+  const [backPressCount, setBackPressCount] = useState(0);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (backPressCount === 1) {
+        Alert.alert(
+          "Exit App",
+          "Are you sure you want to exit?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => setBackPressCount(0),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => BackHandler.exitApp() },
+          ]
+        );
+        return true;
+      } else {
+        setBackPressCount(1);
+        setTimeout(() => setBackPressCount(0), 2000); // Reset count after 2 seconds
+        return true;
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove(); // Clean up event listener
+  }, [backPressCount]);
 
   
   const onRegisterNumberPress = async () =>{

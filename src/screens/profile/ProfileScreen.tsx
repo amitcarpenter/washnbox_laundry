@@ -55,10 +55,16 @@ const ProfileScreen = () => {
     getProfileData()
   },[token])
 
-  // useEffect(()=>{
-  //   getLocationPermission()
-  //   fetchCoordinates()
-  // },[])
+  useEffect(()=>{
+    getLocationPermission()
+    fetchCoordinates()
+  },[])
+
+  useEffect(()=>{
+    if(coordinates){
+      fetchAddressFromCoordinates(coordinates)
+    }
+  },[coordinates])
 
   const getToken = async () =>{
     let token = await getUserToken()
@@ -73,9 +79,9 @@ const ProfileScreen = () => {
       email:result?.data?.provider?.email || "Not Available",
       full_number:result?.data?.provider?.mobile_number  || "Not Available",
       service_details:result?.data?.services?.service_details || [],
-      address:result?.data?.address?.address || "Not Available"
+      address:result?.data?.address?.address,
     }
-    console.log("Profile Data",result?.data)
+    console.log(data)
     setProfileData(data)
     let ids = []
     data?.service_details?.forEach( item =>{
@@ -107,15 +113,15 @@ const ProfileScreen = () => {
       } else if (response.errorMessage) {
         Alert.alert('Error:', response.errorMessage);
       } else {
-        // data = {
-        //   name: response.assets[0].fileName || 'photo.jpg',
-        //   type: response.assets[0].type || 'image/jpeg',
-        //   uri : response?.assets[0].uri
-        // }
+        data = {
+          name: response.assets[0].fileName || 'photo.jpg',
+          type: response.assets[0].type || 'image/jpeg',
+          uri : response?.assets[0].uri
+        }
         setImageUri(response?.assets[0].uri)
       }
     })
-    // setProfile(data)
+    setProfile(data)
   }
 
   const renderProfileImage = () => {
@@ -240,7 +246,7 @@ const ProfileScreen = () => {
         <View style={styles.locationContainer}>
           <Text style={styles.locationLabel}>Location on map</Text>
           <Image source={IMAGES.map} style={{width:"100%",borderRadius:10}} />
-          <Text style={styles.addressText}>{ profileData?.address || "Loading ..."}</Text>
+          <Text style={styles.addressText}>{ address || "Loading ..."}</Text>
         </View>
 
         {/* <Input 
@@ -393,8 +399,8 @@ const ProfileScreen = () => {
   }
   
   const sumitDetails = async () => {
-    let formData = new FormData()
-    let data:ProfileDataType = {
+    let data = new FormData()
+    let slectedFiledsData:ProfileDataType = {
       shop_name:businessName,
       address:address || profileData?.address,
       email:email,
@@ -404,30 +410,33 @@ const ProfileScreen = () => {
       services:selectedClothTypeItem
     }
 
-    let status = await checkIsDataValid(data)
+    let status = await checkIsDataValid(slectedFiledsData)
 
     if(!status.isDeatilsValid){
       renderAlertBox(status)
     }else{
-      let data = {
-        name:businessName,
-        shop_name:businessName,
-        laundry_address:address,
-        email:email,
-        service_details:selectedClothTypeItem,
-        latitude:coordinates.lattitude,
-        longitude:coordinates.longitude,
-        file:profile,
-        // upiId:upiId 
-      }
-      // formData.append('shop_name',businessName)
-      // formData.append('address',address)
-      // formData.append("email",email)
-      // formData.append("phone",phone)
-      // formData.append("services",JSON.stringify(selectedClothTypeItem))
-      // formData.append("profile",profile)
-      let {result} =  await makePostApiCall(PROVIDER_URLS.EDIT_LAUNDRY_PROFILE,data,true,token)
-      // console.log("response ===>",result)
+      // let data = {
+      //   name:businessName,
+      //   shop_name:businessName,
+      //   laundry_address:address || "Not Available",
+      //   email:email,
+      //   service_details:selectedClothTypeItem,
+      //   latitude:coordinates.lattitude,
+      //   longitude:coordinates.longitude,
+      //   file:profile,
+      //   // upiId:upiId 
+      // }
+      console.log(imageUri)
+      data.append("name",businessName)
+      data.append('shop_name',businessName)
+      data.append('address',address)
+      data.append("email",email)
+      data.append("service_details",selectedClothTypeItem)
+      data.append("file",imageUri)
+      data.append("latitude",coordinates?.latitude)
+      data.append("longitude",coordinates?.longitude)
+      let { result } =  await makePostApiCall(PROVIDER_URLS.EDIT_LAUNDRY_PROFILE,data,true,token)
+      console.log("response ===>",result)
       if(result?.success){
         setIsEditable(false)
         let data = {
@@ -465,7 +474,7 @@ const ProfileScreen = () => {
   }
 
   const onLogoutPress = async () =>{
-    await AsyncStorage.clear()
+    await AsyncStorage.removeItem("isLogined")
     navigation.navigate("RegisterPhoneScreen")
   }
 
@@ -487,7 +496,7 @@ const ProfileScreen = () => {
             {renderInputFields()}
 
             <Button
-              disabled={!isEditable} 
+              // disabled={!isEditable} 
               onPress={sumitDetails} 
               title='Update'
               titleStyle={isEditable?{}:{color:COLORS.black}}

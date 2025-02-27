@@ -26,5 +26,3 @@ export const NAVIGATE_TO = {
     ONBOARDIN_SCREEN:"OnbordingScreen",
     REGISTER_PHONE_SCREEN:"RegisterPhoneScreen"
 }
-
-export const GOOGLE_KEY = "AIzaSyB0V1g5YyGB_NE1Lw1QitZZGECA5-1Xnng"
