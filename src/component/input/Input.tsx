@@ -36,6 +36,7 @@ const Input = (props:Props) => {
         onChangeText={props.onChangeText}
         keyboardType={props.keyboardType}
       />
+      
     </View>
   )
 }
