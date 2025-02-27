@@ -1,6 +1,7 @@
 import { 
     View, KeyboardAvoidingView, TouchableWithoutFeedback, 
-    Keyboard, Platform, ScrollView, StyleSheet, StyleProp, ViewStyle 
+    Keyboard, Platform, ScrollView, StyleSheet, StyleProp, ViewStyle, 
+    RefreshControl
 } from 'react-native'
 import React, { ReactNode } from 'react'
 import { COLORS } from '../../constant/constant'
@@ -8,6 +9,9 @@ import { COLORS } from '../../constant/constant'
 type Props = {
     children: ReactNode,
     containerStyle?: StyleProp<ViewStyle>
+    refereshing?: boolean
+    onRefresh?:()=>void,
+    scrollEnabled?: boolean
 }
 
 const Container = (props: Props) => {
@@ -18,7 +22,16 @@ const Container = (props: Props) => {
     >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView
-                // scrollEnabled={false}
+                refreshControl={props?.refereshing?(
+                    <RefreshControl 
+                        refreshing={false} 
+                        onRefresh={props.onRefresh} 
+                    />
+                
+                ):
+                <></>
+                }
+                scrollEnabled={props.scrollEnabled}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollViewContent} 
                 keyboardShouldPersistTaps="handled"

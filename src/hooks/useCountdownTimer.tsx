@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { AppState } from "react-native";
 
-const useCountdownTimer = (initialSeconds: number = 59) => {
+const useCountdownTimer = (initialSeconds: number = 59,resetKey:number) => {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
   const [appState, setAppState] = useState(AppState.currentState);
+  // const [reset,setReset] = useState(resetKey)
+
+
+  useEffect(() => {
+    setSecondsLeft(initialSeconds);
+  }, [resetKey]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

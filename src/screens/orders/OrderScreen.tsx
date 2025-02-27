@@ -34,6 +34,7 @@ const OrderScreen = () => {
   const fetchAllOrders = async () =>{
     let url = PROVIDER_URLS.GET_PROVIDER_ACTIVE_ORDERS
     let response = await makeGetApiCall(url,token)
+    // console.log("Orders ======>",response.result.data[0])
     setOrderList(response.result.data)
     setIsLoading(false)
     // console.log("response =",response.result)
@@ -90,7 +91,7 @@ const OrderScreen = () => {
 
   return (
     <Container>
-      <Header title='Orders' isFilter={true} />
+      <Header title='Orders' />
       
       <View>
         <Text style={styles.activeOrdersText}>6 Active Orders</Text>

@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Fla
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Container from '../../component/view/Container';
 import Header from '../../component/header/Header';
-import { ClothsTypes, COLORS, ICONS, IMAGES } from '../../constant/constant';
+import { ClothsTypes, COLORS, ICONS, IMAGES, USERS } from '../../constant/constant';
 import Input from '../../component/input/Input';
 import Button from '../../component/button/Button';
 // import Geolocation from 'react-native-geolocation-service';
@@ -120,7 +120,7 @@ const EditScreen = () => {
       <View style={styles.profileContainer}>
         <View style={styles.profileImageWrapper}>
           <Image 
-            source={imageUri?{uri:imageUri}:IMAGES.profile}
+            source={imageUri?{uri:imageUri}:USERS.dummy}
             style={styles.profileImage} 
           />
           <TouchableOpacity onPress={selectImage} activeOpacity={0.95} style={styles.cameraButton}>

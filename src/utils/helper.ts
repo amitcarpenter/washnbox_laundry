@@ -14,7 +14,10 @@ export const makePostApiCall = async (url: string, data: any, isFormData = false
                 "Content-Type":"multipart/form-data",
                 "Authorization" : `Bearer ${token}`
             }
-            : { "Content-Type": "application/json" };
+            : { 
+                "Content-Type": "application/json",
+                 "Authorization" : `Bearer ${token}`
+             };
 
         const response = await axios.post(`${BASE_URL + url}`, data, { headers });
 

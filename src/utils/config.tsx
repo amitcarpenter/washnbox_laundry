@@ -11,6 +11,9 @@ export const PROVIDER_URLS = {
     GET_PROVIDER_NOTIFICATION:"get-provider-notification",
     GET_PROVIDER_ACTIVE_ORDERS:"get-provider-active-orders",
     GET_PROFILE:"profile",
+    UPDATE_ORDER_DETAILS:"update-order-details",
+    UPDATE_ORDER_STATUS:"update-order-status",
+    GET_ORDER_BY_ID:"get-order-by-id"
 }
 
 

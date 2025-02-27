@@ -205,8 +205,8 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
     },
     orderImage: {
-      width: 80,
-      height: 80,
+      width: 75,
+      height:75,
       borderRadius: 12,
       resizeMode: 'contain',
     },

@@ -19,6 +19,7 @@ import { checkIsDataValid, getLocationCoordinates, getUserToken, makeGetApiCall,
 import { NAVIGATE_TO, PROVIDER_URLS } from '../../utils/config';
 import { getAddressFromCoordinates } from '../../utils/helper';
 import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const WIDTH = Dimensions.get("window").width
@@ -74,7 +75,7 @@ const ProfileScreen = () => {
       service_details:result?.data?.services?.service_details || [],
       address:result?.data?.address?.address || "Not Available"
     }
-    // console.log(data)
+    console.log("Profile Data",result?.data)
     setProfileData(data)
     let ids = []
     data?.service_details?.forEach( item =>{
@@ -463,6 +464,11 @@ const ProfileScreen = () => {
     )
   }
 
+  const onLogoutPress = async () =>{
+    await AsyncStorage.clear()
+    navigation.navigate("RegisterPhoneScreen")
+  }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContainer}>
      
@@ -479,13 +485,23 @@ const ProfileScreen = () => {
             {renderProfileImage()}
 
             {renderInputFields()}
-              <Button
-                disabled={!isEditable} 
-                onPress={sumitDetails} 
-                title='Update'
-                titleStyle={isEditable?{}:{color:COLORS.black}}
-                style={isEditable?styles.updateButton:styles.disabledButton} 
-              />
+
+            <Button
+              disabled={!isEditable} 
+              onPress={sumitDetails} 
+              title='Update'
+              titleStyle={isEditable?{}:{color:COLORS.black}}
+              style={isEditable?styles.updateButton:styles.disabledButton} 
+            />
+
+            <Button
+              // disabled={!isEditable} 
+              onPress={onLogoutPress} 
+              title='Log Out'
+              titleStyle={{color:"white"}}
+              style={styles.logoutButtonStyle} 
+            />
+
             {renderBottomSheet()}
           </>
         )
@@ -500,6 +516,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     backgroundColor:COLORS.white
+  },
+  logoutButtonStyle:{
+    position: "relative",
+    marginTop:20,
+    backgroundColor:'#f01202'
   },
   cancelTextStyle:{
     position:"absolute",

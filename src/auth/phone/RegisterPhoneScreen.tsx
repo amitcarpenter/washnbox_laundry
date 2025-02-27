@@ -15,6 +15,7 @@ import { makePostApiCall } from '../../utils/helper';
 import { PROVIDER_URLS } from '../../utils/config';
 import { useDispatch, UseDispatch } from 'react-redux';
 import { addLoginData } from '../../redux/dataSlice';
+import CheckBox from 'react-native-check-box';
 
 const RegisterPhoneScreen = () => {
 
@@ -22,16 +23,20 @@ const RegisterPhoneScreen = () => {
   const phoneInput = useRef<PhoneInput>(null);
   const [value, setValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
+  const [checkBox, setCheckBox] = useState(false)
   const dispatch = useDispatch()
 
-  const memoizedRegisterNumberPress = useCallback(()=>{
-    onRegisterNumberPress()
-  },[formattedValue])
-
+  
   const onRegisterNumberPress = async () =>{
     let formattedNum = formattedValue;
     if (!formattedNum) {
       Alert.alert("Error", "Please enter a valid phone number.");
+      return;
+    }
+    console.log(checkBox)
+
+    if(!checkBox){
+      Alert.alert("Error", "Please accept the terms and conditions.");
       return;
     }
 
@@ -57,6 +62,9 @@ const RegisterPhoneScreen = () => {
         }
       ])
     }
+  }
+  const oncheckBoxPress = () =>{
+    setCheckBox(!checkBox)
   }
 
   return (
@@ -99,14 +107,22 @@ const RegisterPhoneScreen = () => {
             }}
           />
 
-          <Text style={styles.termsText}>
-            By pressing “Continue”, you are agreeing to our {"\n"}
-            <Text style={styles.termsLink}>Terms and Conditions</Text>
-          </Text>
+          <View style={{flexDirection:"row",alignItems:"center"}}>
+            <CheckBox 
+              isChecked={checkBox} 
+              checkBoxColor={COLORS.primary} 
+              onClick={oncheckBoxPress} 
+            />
+            <Text style={styles.termsText}>
+              {" "}By pressing “Continue”, you are agreeing to our {"\n"}
+              <Text style={styles.termsLink}>Terms and Conditions</Text>
+            </Text>
+          </View>
+
 
           <Button 
             title='Continue' 
-            onPress={memoizedRegisterNumberPress} 
+            onPress={onRegisterNumberPress} 
           />
         </View>
       </View>

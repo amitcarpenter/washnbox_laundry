@@ -17,7 +17,8 @@ const OtpScreen = () => {
   const navigation = useNavigation()
   const [value, setValue] = useState("")
   const loginData = useSelector(state=>state.data.loginData)
-  const countDown = useCountdownTimer(59)
+  const [resetKey, setResetKey] = useState(0);
+  let countDown = useCountdownTimer(59,resetKey)
   const [otpValue,setOtpValue] = useState(loginData.result.data || "");  
   const otpRef = useRef(null);
   const dispatch = useDispatch()
@@ -77,7 +78,6 @@ const OtpScreen = () => {
   }
 
   const storeToken = async (response:any) =>{
-    // console.log("Store token ===>",response)
     let loginData = JSON.stringify(response)
     await AsyncStorage.setItem("isLogined","1")
     await AsyncStorage.setItem("loginData",loginData)
@@ -85,15 +85,15 @@ const OtpScreen = () => {
 
   const resendOtp = async () =>{
     let data = { "mobile_number": loginData.formattedValue };
-    // console.log("resend ===>",data)
     let url = PROVIDER_URLS.LOGIN_WITH_NUMBER;
     let {result} = await makePostApiCall(url, data);
     await checkResendOtpResponse(result);
+    setResetKey(prevKey => prevKey + 1);
   }
 
   const checkResendOtpResponse = async (response:any) =>{
-    console.log("resend otp ====>",response)
     if(response?.success){
+      // countDown = useCountdownTimer(59)
       setOtpValue(response?.data)
       showAlert("success",response)
     }else{
@@ -109,8 +109,15 @@ const OtpScreen = () => {
             <Text style={styles.verificationText}>Type the verification code {"\n"} we’ve sent you</Text>
 
             {renderOtpInput()}
+
             <Text style={styles.phoneNumber}>{loginData.number} <Text onPress={()=>navigation.navigate("RegisterPhoneScreen")} style={styles.editText}> Edit</Text></Text>
-            <Text style={styles.resendText} onPress={resendOtp}>Send again</Text>
+            
+            <Text 
+              style={countDown!="0:00"?styles.disabledResendText:styles.resendText} 
+              disabled={countDown!="0:00"} 
+              onPress={resendOtp}>
+                Send again
+            </Text>
 
             <Text style={{position:"absolute",bottom:160}}>{otpValue || "try again"}</Text>
             <Button 
@@ -134,6 +141,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    height:"98%",
     alignItems: "center",
     paddingTop: 40,
   },
@@ -184,6 +192,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 10,
   },
+  disabledResendText:{
+    fontSize: 17,
+    color: "gray",
+    fontWeight: "700",
+    marginTop: 10,
+  }
 });
 
 export default OtpScreen;

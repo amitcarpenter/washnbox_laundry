@@ -145,7 +145,8 @@ export const USERS = {
     user2:require("../assets/images/user2.png"),
     user3:require("../assets/images/user3.png"),
     user4:require("../assets/images/user4.png"),
-    user5:require("../assets/images/user5.png")
+    user5:require("../assets/images/user5.png"),
+    dummy:require("../assets/images/dummyUser.png")
 }
 
 export const NotificationData = [

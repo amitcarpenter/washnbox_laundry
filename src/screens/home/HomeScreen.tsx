@@ -43,6 +43,7 @@ const HomeScreen = () => {
   const dispatch = useDispatch()
   const [originalData, setOriginalData] = useState([]);
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshing,setRefereshing] = useState(false)
   
   useEffect(() => {
     const backAction = () => {
@@ -77,7 +78,7 @@ const HomeScreen = () => {
   };
   
   const fetchAllOrders = async () => {
-    let url = PROVIDER_URLS.GET_PROVIDER_ACTIVE_ORDERS
+    let url = PROVIDER_URLS.GET_PROVIDER_ORDERS
     let headers = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
@@ -110,6 +111,12 @@ const HomeScreen = () => {
     setIsFilterModalOpen(true)
   }
 
+  const handleRefereshing = async () =>{
+    setIsLoading(true)
+    await fetchAllOrders()
+    setIsLoading(false)
+  }
+
   // <--------- Below this we have all the UI stuff ------->
 
   const renderSearchField = () => (
@@ -122,13 +129,15 @@ const HomeScreen = () => {
   );
 
   const navigateToOrderDetails = (item:any) =>{
+    // console.log("user ===>",item?.user)
     let orderDetails = {
-      image:item.user.profile_image,
-      name:item.user.name || "Not Available",
-      updated_at:new Date(item?.order_payment?.updated_at).toLocaleString(),
+      image:item.user.profile_image?.trim(),
+      name:item?.user?.name || "Not Available",
+      updated_at:item?.order_payment?.updated_at,
       services:item?.item_details || [],
-      total_price:item.total_price,
+      total_price:item?.total_price,
       order_id:item?.order_id,
+      user_id:item?.user?.user_id,
       item_details:item?.item_details,
       scheduled_pickup_time: null,
     }
@@ -139,7 +148,7 @@ const HomeScreen = () => {
 
   const renderOrderItem = ({ item }) => {
     const details = {
-      image:item.user.profile_image,
+      image:item.user.profile_image?.trim(),
       name:item.user.name || "Not Available",
       date:new Date(item?.order_payment?.updated_at).toLocaleString(),
       services:item?.item_details || [],
@@ -152,7 +161,11 @@ const HomeScreen = () => {
     return(
       <TouchableOpacity activeOpacity={0.8} onPress={()=>navigateToOrderDetails(item)} style={styles.orderItemContainer}>
         <View style={styles.imageContainer}>
-          <Image source={USERS.user1} style={styles.orderImage} />
+          <Image 
+            source={details.image?{uri:details.image}:USERS.dummy} 
+            resizeMode="cover" 
+            style={styles.orderImage} 
+          />
         </View>
         <View style={styles.orderDetails}>
           <Text style={styles.orderName}>{details.name}</Text>
@@ -189,6 +202,8 @@ const HomeScreen = () => {
           <FlatList
             data={pendingData}
             // contentContainerStyle={styles.listContainer}
+            refreshing={isLoading}
+            onRefresh={handleRefereshing}
             showsVerticalScrollIndicator={false}
             renderItem={renderOrderItem}
             keyExtractor={(item, index) => index.toString()}
@@ -207,9 +222,9 @@ const HomeScreen = () => {
       <TouchableOpacity onPress={()=>navigation.navigate("NotificationScreen")}>
         <Image source={ICONS.notification_bell} style={styles.notificationIcon} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
+      {/* <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
         <Image source={ICONS.filter} style={styles.filterIcon} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 
@@ -335,7 +350,7 @@ const HomeScreen = () => {
   }
 
   return (
-    <Container>
+    <Container refereshing={true} onRefresh={handleRefereshing} scrollEnabled={true}>
       <View style={styles.topSection}>
         {renderHeader()}
         {renderSearchField()}
